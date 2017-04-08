@@ -25,6 +25,15 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 
 /************** Create Shipment Ends ************************/
 
+/************** Update Shipment Starts *********************/
+func UpdateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering Update Shipment", args[0])
+	shipmentRequest := parseShipmentWayBillRequest(args[0])
+	return saveShipmentWayBill(stub, shipmentRequest)
+}
+
+/************** Update Shipment Ends ************************/
+
 /************** Save Shipment WayBill Starts ****************/
 /*This is common code for Save Shipment,WayBill,DCShipment,DCWayBill*/
 
