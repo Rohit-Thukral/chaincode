@@ -896,6 +896,8 @@ func (t *B4SCChaincode) Invoke(stub shim.ChaincodeStubInterface, function string
 		return DumpData(stub, args)
 	} else if function == "CreateShipment" {
 		return CreateShipment(stub, args)
+	} else if function == "UpdateShipment" {
+		return UpdateShipment(stub, args)
 	} else if function == "CreateWayBill" {
 		return CreateWayBill(stub, args)
 	} else if function == "CreateDCShipment" {
