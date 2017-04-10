@@ -86,6 +86,7 @@ func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBill
 	shipmentWayBill.WayBillModifiedDate = createShipmentWayBillRequest.WayBillModifiedDate
 	shipmentWayBill.WayBillModifiedBy = createShipmentWayBillRequest.WayBillModifiedBy
 	dataToStore, _ := json.Marshal(shipmentWayBill)
+fmt.Println("shipmentWayBill============ ",shipmentWayBill)
 fmt.Println("dataToStore============ ",dataToStore)
 	
 	err := stub.PutState(shipmentWayBill.ShipmentNumber, []byte(dataToStore))
