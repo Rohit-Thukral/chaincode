@@ -97,14 +97,21 @@ type PalletDetails struct {
 	EwWayBillDate      string
 }
 
+
+type AllShipmentWayBills struct {
+	AllWayBillNumber []string `json:"allWayBillNumber"`
+}
+
+
 /*This is common struct across Shipment and Waybill*/
 type ShipmentWayBill struct {
-	WayBillNumber         string   `json:"wayBillNumber"`
+	WayBillNumber         string   `json:"waybillNumber"`
 	ShipmentNumber        string   `json:"shipmentNumber"`
 	CountryFrom           string   `json:"countryFrom"`
 	CountryTo             string   `json:"countryTo"`
 	Consigner             string   `json:"consigner"`
 	Consignee             string   `json:"consignee"`
+	Status             	  string   `json:"status"`
 	Custodian             string   `json:"custodian"`
 	CustodianHistory      []string `json:"custodianHistory"`
 	PersonConsigningGoods string   `json:"personConsigningGoods"`
@@ -129,16 +136,23 @@ type ShipmentWayBill struct {
 	ShipmentValue         string   `json:"shipmentValue"`
 	EntityName            string   `json:"entityName"`
 	ShipmentCreationDate  string   `json:"shipmentCreationDate"`
-	EWWayBillNumber       string   `json:"eWWayBillNumber"`
+	EWWayBillNumber       string   `json:"ewWaybillNumber"`
 	SupportiveDocuments   []string `json:"supportiveDocuments"`
 	ShipmentCreatedBy     string   `json:"shipmentCreatedBy"`
 	ShipmentModifiedDate  string   `json:"shipmentModifiedDate"`
 	ShipmentModifiedBy    string   `json:"shipmentModifiedBy"`
-	WayBillCreationDate   string   `json:"wayBillCreationDate"`
-	WayBillCreatedBy      string   `json:"wayBillCreatedBy"`
-	WayBillModifiedDate   string   `json:"wayBillModifiedDate"`
-	WayBillModifiedBy     string   `json:"wayBillModifiedBy"`
+	WayBillCreationDate   string   `json:"waybillCreationDate"`
+	WayBillCreatedBy      string   `json:"waybillCreatedBy"`
+	WayBillModifiedDate   string   `json:"waybillModifiedDate"`
+	WayBillModifiedBy     string   `json:"waybillModifiedBy"`
 }
+
+
+
+type AllEWWayBill struct {
+	AllWayBillNumber []string `json:"allWayBillNumber"`
+}
+
 
 type EWWayBill struct {
 	EwWayBillNumber       string
@@ -149,6 +163,7 @@ type EWWayBill struct {
 	Consigner             string
 	Consignee             string
 	Custodian             string
+	Status             	  string 
 	CustodianHistory      []string
 	CustodianTime         string
 	PersonConsigningGoods string

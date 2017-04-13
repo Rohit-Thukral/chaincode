@@ -20,7 +20,20 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Entering Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 	UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
-	return saveShipmentWayBill(stub, shipmentRequest)
+	saveResult,errMsg := saveShipmentWayBill(stub, shipmentRequest)
+	
+	shipmentwaybillidsRequest := ShipmentWayBillIndex{}
+	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
+	fmt.Println("shipment ids.....", shipmentwaybillids)
+	if err != nil {
+		shipmentwaybillidsRequest.ShipmentNumber = append(shipmentwaybillidsRequest.ShipmentNumber, shipmentWayBill.ShipmentNumber)
+		SaveShipmentWaybillIndex(stub, shipmentwaybillidsRequest)
+	} else {
+		shipmentwaybillidsRequest.ShipmentNumber = append(shipmentwaybillids.ShipmentNumber, shipmentWayBill.ShipmentNumber)
+		fmt.Println("Updated entity shipmentwaybillindex", shipmentwaybillidsRequest)
+		SaveShipmentWaybillIndex(stub, shipmentwaybillidsRequest)
+	}
+	return saveResult,errMsg
 }
 
 /************** Create Shipment Ends ************************/
@@ -44,7 +57,7 @@ func parseShipmentWayBillRequest(jsondata string) ShipmentWayBill {
 	return res
 }
 func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBillRequest ShipmentWayBill) ([]byte, error) {
-	fmt.Println("way Bill no ",createShipmentWayBillRequest.WayBillNumber)
+	fmt.Println("way Bill no ", createShipmentWayBillRequest.WayBillNumber)
 	shipmentWayBill := ShipmentWayBill{}
 	shipmentWayBill.WayBillNumber = createShipmentWayBillRequest.WayBillNumber
 	shipmentWayBill.ShipmentNumber = createShipmentWayBillRequest.ShipmentNumber
@@ -85,10 +98,11 @@ func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBill
 	shipmentWayBill.WayBillCreatedBy = createShipmentWayBillRequest.WayBillCreatedBy
 	shipmentWayBill.WayBillModifiedDate = createShipmentWayBillRequest.WayBillModifiedDate
 	shipmentWayBill.WayBillModifiedBy = createShipmentWayBillRequest.WayBillModifiedBy
+	shipmentWayBill.Status = createShipmentWayBillRequest.Status
 	dataToStore, _ := json.Marshal(shipmentWayBill)
-fmt.Println("shipmentWayBill============ ",shipmentWayBill)
-fmt.Println("dataToStore============ ",dataToStore)
-	
+	fmt.Println("shipmentWayBill============ ", shipmentWayBill)
+	fmt.Println("dataToStore============ ", dataToStore)
+
 	err := stub.PutState(shipmentWayBill.ShipmentNumber, []byte(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save WayBill to ledger", err)
@@ -135,10 +149,11 @@ func fetchShipmentWayBillData(stub shim.ChaincodeStubInterface, shipmentNo strin
 		return shipmentWayBill, err
 	}
 
-	if marshErr := json.Unmarshal(indexByte, &shipmentWayBill); marshErr != nil {
-		fmt.Println("Could not retrieve Shipment WayBill from ledger", marshErr)
-		return shipmentWayBill, marshErr
-	}
+	json.Unmarshal(indexByte, &shipmentWayBill)
+
+	fmt.Println("======================shipment data-->")
+	fmt.Println(shipmentWayBill)
+	fmt.Println("======================")
 
 	return shipmentWayBill, nil
 

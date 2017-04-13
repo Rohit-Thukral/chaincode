@@ -91,3 +91,16 @@ func (t *Utility) hasPermission(acl []string, currUser string) bool {
 
 	return false
 }
+
+
+func (t *Utility) hasString(strArray []string, str string) bool {
+	lenOfArray := len(strArray)
+
+	for i := 0; i < lenOfArray; i++ {
+		if strArray[i] == str {
+			return true
+		}
+	}
+
+	return false
+}

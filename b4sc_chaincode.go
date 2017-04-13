@@ -149,7 +149,7 @@ are not touched as of now to avoid break of any functionality devloped by Kartik
 
 //Will be avlable in the WorldStats as "ShipmentWayBillIndex"
 type ShipmentWayBillIndex struct {
-	ShipmentNumber []string
+	ShipmentNumber		[]string		`json:"shipmentNumber"`
 }
 
 //Will be avlable in the WorldStats as "WayBillNumberIndex"
@@ -457,7 +457,7 @@ func fetchShipmentIndex(stub shim.ChaincodeStubInterface, callingEntityName stri
 
 //START COMMNENTED BY ARSHAD AS THESE ARE NO MORE USED - KARTHIK PLEASE REVIEW AND PERMANNETLY DELETE IT IF NOT USED BY ANY OF YOU MODULE
 
-/************** Asset Search Service Starts ************************
+/************** Asset Search Service Starts ************************/
 
 type SearchAssetRequest struct {
 	CallingEntityName string `json:"callingEntityName"`
@@ -573,7 +573,7 @@ func SearchAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 
 /************** Asset Search Service Ends ************************/
 
-/************** Carton Search Service Starts ************************
+/************** Carton Search Service Starts ************************/
 
 type SearchCartonRequest struct {
 	CallingEntityName string `json:"callingEntityName"`
@@ -668,7 +668,7 @@ func SearchCarton(stub shim.ChaincodeStubInterface, args []string) ([]byte, erro
 
 /************** Carton Search Service Ends ************************/
 
-/************** Pallet Search Service Starts ************************
+/************** Pallet Search Service Starts ************************/
 
 type SearchPalletRequest struct {
 	CallingEntityName string `json:"callingEntityName"`
@@ -929,7 +929,8 @@ func (t *B4SCChaincode) Invoke(stub shim.ChaincodeStubInterface, function string
 }
 
 func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-
+	fmt.Println("Query : function : "+function+" args : "+args[0])
+	
 	if function == "ViewDataForKey" {
 		return ViewDataForKey(stub, args)
 	} else if function == "Inbox" {
@@ -956,6 +957,14 @@ func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string,
 		return ViewShipmentWayBill(stub, args)
 	}  else if function == "getAllComplianceDocument" {
 		return getAllComplianceDocument(stub, args)
+	} else if function == "SearchDateRange" {
+		return SearchDateRange(stub, args)
+	} else if function == "SearchPallet" {
+		return SearchPallet(stub, args)
+	} else if function == "SearchCarton" {
+		return SearchCarton(stub, args)
+	} else if function == "SearchAsset" {
+		return SearchAsset(stub, args)
 	}
 	return nil, errors.New("Invalid function name " + function)
 
