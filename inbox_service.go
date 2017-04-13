@@ -114,7 +114,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 		if inboxName == "InTransit" && (status == "WaybillCreated" || status == "DCWaybillCreated") && carrier == entityId {
 			return "true"
 		}
-		if inboxName == "Scheduled" && (status == "WaybillDelivered" || status == "DCWaybillDelivered") && carrier == entityId {
+		if inboxName == "Delivered" && (status == "WaybillDelivered" || status == "DCWaybillDelivered") && carrier == entityId {
 			return "true"
 		}
 	}
