@@ -26,10 +26,10 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
 	fmt.Println("shipment ids.....", shipmentwaybillids)
 	if err != nil {
-		shipmentwaybillidsRequest.ShipmentNumber = append(shipmentwaybillidsRequest.ShipmentNumber, shipmentWayBill.ShipmentNumber)
+		shipmentwaybillidsRequest.ShipmentNumber = append(shipmentwaybillidsRequest.ShipmentNumber, shipmentRequest.ShipmentNumber)
 		SaveShipmentWaybillIndex(stub, shipmentwaybillidsRequest)
 	} else {
-		shipmentwaybillidsRequest.ShipmentNumber = append(shipmentwaybillids.ShipmentNumber, shipmentWayBill.ShipmentNumber)
+		shipmentwaybillidsRequest.ShipmentNumber = append(shipmentwaybillids.ShipmentNumber, shipmentRequest.ShipmentNumber)
 		fmt.Println("Updated entity shipmentwaybillindex", shipmentwaybillidsRequest)
 		SaveShipmentWaybillIndex(stub, shipmentwaybillidsRequest)
 	}
