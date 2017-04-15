@@ -137,7 +137,7 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 			var tmpEntity Entity
 			
 			tmpEntity, err  = thisClass.fetchEntities(stub, allEntities.EntityArr[i])
-			fmt.Println("===tmpEntity==="+tmpEntity)
+			fmt.Println("===tmpEntity===",tmpEntity)
 			fmt.Println("===consignerDetails.ConsignerType===",consignerDetails.ConsignerType)
 			fmt.Println("===tmpEntity.EntityType===",tmpEntity.EntityType)
 			fmt.Println("===consignerDetails.ConsignerCountry===",consignerDetails.ConsignerCountry)
