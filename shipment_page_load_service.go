@@ -116,7 +116,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 
 func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.ChaincodeStubInterface, consignerDetails ConsignerShipmentPageLoadResponse) ([]ConsigneeShipmentPageLoadResponse, []CarrierResponse, error) {
 	fmt.Println("Entering fetchCorrespondingConsignees consignerDetails : ")
-	fmt.Println(consignerDetails)
+	fmt.Println("===consignerDetails==="+consignerDetails)
 
 	var err error
 	var thisClass ShipmentPageLoadService
@@ -133,10 +133,18 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 		for i := 0; i < lenOfArray; i++ {
 			var tmpConsigneeResponse ConsigneeShipmentPageLoadResponse
 			var tmpEntity Entity
-
+			
 			tmpEntity, err  = thisClass.fetchEntities(stub, allEntities.EntityArr[i])
+			fmt.Println("===tmpEntity==="+tmpEntity)
+			fmt.Println("===consignerDetails.ConsignerType==="+consignerDetails.ConsignerType)
+			fmt.Println("===tmpEntity.EntityType==="+tmpEntity.EntityType)
+			fmt.Println("===consignerDetails.ConsignerCountry==="+consignerDetails.ConsignerCountry)
+			fmt.Println("===tmpEntity.EntityCountry==="+tmpEntity.EntityCountry)
+			fmt.Println("===consignerDetails.ConsignerId==="+consignerDetails.ConsignerId)
+			fmt.Println("===tmpEntity.EntityId ==="+tmpEntity.EntityId )
+			
 			if(err == nil) {
-				if(tmpEntity.EntityName != consignerDetails.ConsignerName && ((consignerDetails.ConsignerType == "Manufacturer" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "Warehouse" && tmpEntity.EntityType == "Warehouse" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) )) {
+				if(tmpEntity.EntityId != consignerDetails.ConsignerId && ((consignerDetails.ConsignerType == "Manufacturer" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "Warehouse" && tmpEntity.EntityType == "Warehouse" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) )) {
 					tmpConsigneeResponse.ConsigneeId 		= tmpEntity.EntityId
 					tmpConsigneeResponse.ConsigneeName 		= tmpEntity.EntityName
 					tmpConsigneeResponse.ConsigneeAddress 	= tmpEntity.EntityAddress
