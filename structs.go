@@ -30,7 +30,7 @@ type BlockchainResponse struct {
 }
 
 type AssetDetails struct {
-	AssetsSerialNumber string
+	AssetSerialNumber string
 	AssetModel         string
 	AssetType          string
 	AssetMake          string
@@ -61,7 +61,7 @@ type CartonDetails struct {
 	CartonStatus       string
 	CartonCreationDate string
 	PalletSerialNumber string
-	AssetsSerialNumber []string
+	AssetSerialNumber []string
 	MshipmentNumber    string
 	DcShipmentNumber   string
 	MwayBillNumber     string
@@ -82,7 +82,7 @@ type PalletDetails struct {
 	PalletStatus       string
 	CartonSerialNumber []string
 	PalletCreationDate string
-	AssetsSerialNumber []string
+	AssetSerialNumber []string
 	MshipmentNumber    string
 	DcShipmentNumber   string
 	MwayBillNumber     string

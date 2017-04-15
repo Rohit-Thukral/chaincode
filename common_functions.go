@@ -42,7 +42,7 @@ func parseAssetRequest(jsondata string) AssetDetails {
 }
 func saveAssetDetails(stub shim.ChaincodeStubInterface, createAssetDetailsRequest AssetDetails) ([]byte, error) {
 	assetDetails := AssetDetails{}
-	assetDetails.AssetSerialNo = createAssetDetailsRequest.AssetSerialNo
+	assetDetails.AssetSerialNumber = createAssetDetailsRequest.AssetSerialNumber
 	assetDetails.AssetModel = createAssetDetailsRequest.AssetModel
 	assetDetails.AssetType = createAssetDetailsRequest.AssetType
 	assetDetails.AssetMake = createAssetDetailsRequest.AssetMake
@@ -68,7 +68,7 @@ func saveAssetDetails(stub shim.ChaincodeStubInterface, createAssetDetailsReques
 
 	dataToStore, _ := json.Marshal(assetDetails)
 
-	err := stub.PutState(assetDetails.AssetSerialNo, []byte(dataToStore))
+	err := stub.PutState(assetDetails.AssetSerialNumber, []byte(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Assets Details to ledger", err)
 		return nil, err
@@ -76,7 +76,7 @@ func saveAssetDetails(stub shim.ChaincodeStubInterface, createAssetDetailsReques
 
 	resp := BlockchainResponse{}
 	resp.Err = "000"
-	resp.Message = assetDetails.AssetSerialNo
+	resp.Message = assetDetails.AssetSerialNumber
 
 	respString, _ := json.Marshal(resp)
 
@@ -104,12 +104,12 @@ func parseCartonRequest(jsondata string) CartonDetails {
 }
 func saveCartonDetails(stub shim.ChaincodeStubInterface, createCartonDetailsRequest CartonDetails) ([]byte, error) {
 	cartonDetails := CartonDetails{}
-	cartonDetails.CartonSerialNo = createCartonDetailsRequest.CartonSerialNo
+	cartonDetails.CartonSerialNumber = createCartonDetailsRequest.CartonSerialNumber
 	cartonDetails.CartonModel = createCartonDetailsRequest.CartonModel
 	cartonDetails.CartonStatus = createCartonDetailsRequest.CartonStatus
 	cartonDetails.CartonCreationDate = createCartonDetailsRequest.CartonCreationDate
 	cartonDetails.PalletSerialNumber = createCartonDetailsRequest.PalletSerialNumber
-	cartonDetails.AssetsSerialNumber = createCartonDetailsRequest.AssetsSerialNumber
+	cartonDetails.AssetSerialNumber = createCartonDetailsRequest.AssetSerialNumber
 	cartonDetails.MshipmentNumber = createCartonDetailsRequest.MshipmentNumber
 	cartonDetails.DcShipmentNumber = createCartonDetailsRequest.DcShipmentNumber
 	cartonDetails.MwayBillNumber = createCartonDetailsRequest.MwayBillNumber
@@ -124,7 +124,7 @@ func saveCartonDetails(stub shim.ChaincodeStubInterface, createCartonDetailsRequ
 	cartonDetails.EwWayBillDate = createCartonDetailsRequest.EwWayBillDate
 	dataToStore, _ := json.Marshal(cartonDetails)
 
-	err := stub.PutState(cartonDetails.CartonSerialNo, []byte(dataToStore))
+	err := stub.PutState(cartonDetails.CartonSerialNumber, []byte(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Carton Details to ledger", err)
 		return nil, err
@@ -132,7 +132,7 @@ func saveCartonDetails(stub shim.ChaincodeStubInterface, createCartonDetailsRequ
 
 	resp := BlockchainResponse{}
 	resp.Err = "000"
-	resp.Message = cartonDetails.CartonSerialNo
+	resp.Message = cartonDetails.CartonSerialNumber
 
 	respString, _ := json.Marshal(resp)
 
@@ -159,12 +159,12 @@ func parsePalletRequest(jsondata string) PalletDetails {
 }
 func savePalletDetails(stub shim.ChaincodeStubInterface, createPalletDetailsRequest PalletDetails) ([]byte, error) {
 	palletDetails := PalletDetails{}
-	palletDetails.PalletSerialNo = createPalletDetailsRequest.PalletSerialNo
+	palletDetails.PalletSerialNumber = createPalletDetailsRequest.PalletSerialNumber
 	palletDetails.PalletModel = createPalletDetailsRequest.PalletModel
 	palletDetails.PalletStatus = createPalletDetailsRequest.PalletStatus
 	palletDetails.CartonSerialNumber = createPalletDetailsRequest.CartonSerialNumber
 	palletDetails.PalletCreationDate = createPalletDetailsRequest.PalletCreationDate
-	palletDetails.AssetsSerialNumber = createPalletDetailsRequest.AssetsSerialNumber
+	palletDetails.AssetSerialNumber = createPalletDetailsRequest.AssetSerialNumber
 	palletDetails.MshipmentNumber = createPalletDetailsRequest.MshipmentNumber
 	palletDetails.DcShipmentNumber = createPalletDetailsRequest.DcShipmentNumber
 	palletDetails.MwayBillNumber = createPalletDetailsRequest.MwayBillNumber
@@ -179,7 +179,7 @@ func savePalletDetails(stub shim.ChaincodeStubInterface, createPalletDetailsRequ
 	palletDetails.EwWayBillDate = createPalletDetailsRequest.EwWayBillDate
 	dataToStore, _ := json.Marshal(palletDetails)
 
-	err := stub.PutState(palletDetails.PalletSerialNo, []byte(dataToStore))
+	err := stub.PutState(palletDetails.PalletSerialNumber, []byte(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Pallet Details to ledger", err)
 		return nil, err
@@ -187,7 +187,7 @@ func savePalletDetails(stub shim.ChaincodeStubInterface, createPalletDetailsRequ
 
 	resp := BlockchainResponse{}
 	resp.Err = "000"
-	resp.Message = palletDetails.PalletSerialNo
+	resp.Message = palletDetails.PalletSerialNumber
 
 	respString, _ := json.Marshal(resp)
 
@@ -201,9 +201,9 @@ func savePalletDetails(stub shim.ChaincodeStubInterface, createPalletDetailsRequ
 func GetAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering GetAsset " + args[0])
 
-	assetSerialNo := args[0]
+	AssetSerialNumber := args[0]
 
-	assetData, dataerr := fetchAssetDetails(stub, assetSerialNo)
+	assetData, dataerr := fetchAssetDetails(stub, AssetSerialNumber)
 	if dataerr == nil {
 
 		dataToStore, _ := json.Marshal(assetData)
@@ -214,10 +214,10 @@ func GetAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return nil, dataerr
 
 }
-func fetchAssetDetails(stub shim.ChaincodeStubInterface, assetSerialNo string) (AssetDetails, error) {
+func fetchAssetDetails(stub shim.ChaincodeStubInterface, AssetSerialNumber string) (AssetDetails, error) {
 	var assetDetails AssetDetails
 
-	indexByte, err := stub.GetState(assetSerialNo)
+	indexByte, err := stub.GetState(AssetSerialNumber)
 	if err != nil {
 		fmt.Println("Could not retrive Asset Details ", err)
 		return assetDetails, err
@@ -310,15 +310,15 @@ func fetchPalletDetails(stub shim.ChaincodeStubInterface, palletSerialNo string)
 /************** Update Asset Details Starts ************************/
 func UpdateAssetDetails(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Update Asset Details")
-	assetSerialNo := args[0]
+	AssetSerialNumber := args[0]
 	wayBillNumber := args[1]
-	assetDetails, _ := fetchAssetDetails(stub, assetSerialNo)
+	assetDetails, _ := fetchAssetDetails(stub, AssetSerialNumber)
 
 	assetDetails.EwWayBillNumber = wayBillNumber
 
 	fmt.Println("Updated Entity", assetDetails)
 	dataToStore, _ := json.Marshal(assetDetails)
-	err := stub.PutState(assetSerialNo, []byte(dataToStore))
+	err := stub.PutState(AssetSerialNumber, []byte(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
 		return nil, err
@@ -326,7 +326,7 @@ func UpdateAssetDetails(stub shim.ChaincodeStubInterface, args []string) ([]byte
 
 	resp := BlockchainResponse{}
 	resp.Err = "000"
-	resp.Message = assetSerialNo
+	resp.Message = AssetSerialNumber
 
 	respString, _ := json.Marshal(resp)
 
@@ -449,11 +449,11 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 		} //End Loop for Carton Nos
 
 		//Start Loop for Asset Nos
-		lenOfArray = len(palletData.AssetsSerialNumber)
+		lenOfArray = len(palletData.AssetSerialNumber)
 		fmt.Println("assets lenOfArray===",lenOfArray)
 		for i := 0; i < lenOfArray; i++ {
 
-			assetData, err := fetchAssetDetails(stub, palletData.AssetsSerialNumber[i])
+			assetData, err := fetchAssetDetails(stub, palletData.AssetSerialNumber[i])
 			fmt.Println("assetData===",assetData)
 			if err != nil {
 				fmt.Println("Error while retrieveing the Asset Details", err)
