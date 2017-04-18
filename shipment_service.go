@@ -20,8 +20,9 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Entering Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 	UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
-	saveResult,errMsg := saveShipmentWayBill(stub, shipmentRequest)
-	
+	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
+	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
+
 	shipmentwaybillidsRequest := ShipmentWayBillIndex{}
 	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
 	fmt.Println("shipment ids.....", shipmentwaybillids)
@@ -33,7 +34,7 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 		fmt.Println("Updated entity shipmentwaybillindex", shipmentwaybillidsRequest)
 		SaveShipmentWaybillIndex(stub, shipmentwaybillidsRequest)
 	}
-	return saveResult,errMsg
+	return saveResult, errMsg
 }
 
 /************** Create Shipment Ends ************************/
@@ -42,6 +43,10 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 func UpdateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Update Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
+
+	wayBilldata, _ := fetchShipmentWayBillData(stub, shipmentRequest.ShipmentNumber)
+	shipmentRequest.CustodianHistory = wayBilldata.CustodianHistory
+	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
 	return saveShipmentWayBill(stub, shipmentRequest)
 }
 
@@ -103,7 +108,7 @@ func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBill
 	fmt.Println("shipmentWayBill============ ", shipmentWayBill)
 	fmt.Println("dataToStore============ ", dataToStore)
 
-	err := stub.PutState(shipmentWayBill.ShipmentNumber, []byte(dataToStore))
+	err := DumpData(stub, shipmentWayBill.ShipmentNumber, string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save WayBill to ledger", err)
 		return nil, err

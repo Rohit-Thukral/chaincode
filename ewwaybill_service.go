@@ -30,9 +30,14 @@ func CreateEWWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	ewWayBillRequest := parseEWWayBillRequest(args[0])
 	lenOfArray := len(ewWayBillRequest.WayBillsNumber)
 	for i := 0; i < lenOfArray; i++ {
-		wayBillShipmentMapping, err := fetchWayBillShipmentMappingData(stub, ewWayBillRequest.WayBillsNumber[i])
+		wayBillShipmentMapping, err := FetchWayBillShipmentMappingData(stub, ewWayBillRequest.WayBillsNumber[i])
 		dcShipmentNumber := wayBillShipmentMapping.DCShipmentNumber
 		dcShipmentData, _ := fetchShipmentWayBillData(stub, dcShipmentNumber)
+		dcShipmentData.CustodianHistory = UpdateShipmentCustodianHistoryListForeWWaybill(stub, ewWayBillRequest.Custodian, ewWayBillRequest.Comments, ewWayBillRequest.EwWayBillCreationDate, dcShipmentNumber)
+		dcShipmentData.EWWayBillNumber = ewWayBillRequest.EwWayBillNumber
+
+		saveShipmentWayBill(stub, dcShipmentData)
+
 		UpdatePalletCartonAssetByWayBill(stub, dcShipmentData, EWWAYBILL, ewWayBillRequest.EwWayBillNumber)
 		ewWayBillRequest.ShipmentsNumber = append(ewWayBillRequest.ShipmentsNumber, dcShipmentNumber)
 		lenOfArray = len(dcShipmentData.PalletsSerialNumber)
@@ -55,10 +60,51 @@ func CreateEWWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 		}
 		ewWayBillRequest.WayBillsNumber = tmpWayBillArray
 	}
+	ewWayBillRequest.CustodianHistory = UpdateEWWaybillCustodianHistoryList(stub, ewWayBillRequest)
+	saveResult, errMsg := saveEWWayBill(stub, ewWayBillRequest)
 
-	return saveEWWayBill(stub, ewWayBillRequest)
+	/*********Storing Shipment number in shipmentwaybillindex array to retrieve through inbox*************/
+	allEWWaybillidsRequest := AllEWWayBill{}
+	allEWWayBillids, err := FetchEWWayBillIndex(stub, "AllEWWayBill")
+	fmt.Println("ew waybill ids.....", allEWWayBillids)
+	if err != nil {
+		allEWWaybillidsRequest.AllWayBillNumber = append(allEWWaybillidsRequest.AllWayBillNumber, ewWayBillRequest.EwWayBillNumber)
+		SaveEWWaybillIndex(stub, allEWWaybillidsRequest)
+	} else {
+		allEWWaybillidsRequest.AllWayBillNumber = append(allEWWayBillids.AllWayBillNumber, ewWayBillRequest.EwWayBillNumber)
+		fmt.Println("Updated entity ewWayBillRequest", allEWWaybillidsRequest)
+		SaveEWWaybillIndex(stub, allEWWaybillidsRequest)
+	}
+	/********* End Storing Shipment number in ewWayBillRequest array to retrieve through inbox*************/
+
+	return saveResult, errMsg
 
 }
+
+/************** Update Export Warehouse WayBill Starts ************************/
+func UpdateEWWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering Update Export Warehouse WayBill ")
+
+	ewWayBillRequest := parseEWWayBillRequest(args[0])
+	lenOfArray := len(ewWayBillRequest.WayBillsNumber)
+	for i := 0; i < lenOfArray; i++ {
+		wayBillShipmentMapping, _ := FetchWayBillShipmentMappingData(stub, ewWayBillRequest.WayBillsNumber[i])
+		dcShipmentNumber := wayBillShipmentMapping.DCShipmentNumber
+		dcShipmentData, _ := fetchShipmentWayBillData(stub, dcShipmentNumber)
+		dcShipmentData.CustodianHistory = UpdateShipmentCustodianHistoryListForeWWaybill(stub, ewWayBillRequest.Custodian, ewWayBillRequest.Comments, ewWayBillRequest.EwWayBillCreationDate, dcShipmentNumber)
+
+		saveShipmentWayBill(stub, dcShipmentData)
+	}
+	ewWayBillRequest.CustodianHistory = UpdateEWWaybillCustodianHistoryList(stub, ewWayBillRequest)
+	emWayBilldata, _ := fetchEWWayBillData(stub, ewWayBillRequest.EwWayBillNumber)
+	ewWayBillRequest.SupportiveDocuments = emWayBilldata.SupportiveDocuments
+	saveResult, errMsg := saveEWWayBill(stub, ewWayBillRequest)
+	return saveResult, errMsg
+
+}
+
+/***end of updateewwaybill*************/
+
 func parseEWWayBillRequest(jsondata string) EWWayBill {
 	res := EWWayBill{}
 	json.Unmarshal([]byte(jsondata), &res)
@@ -93,10 +139,11 @@ func saveEWWayBill(stub shim.ChaincodeStubInterface, createEWWayBillRequest EWWa
 	ewWayBill.EwWayBillCreatedBy = createEWWayBillRequest.EwWayBillCreatedBy
 	ewWayBill.EwWayBillModifiedDate = createEWWayBillRequest.EwWayBillModifiedDate
 	ewWayBill.EwWayBillModifiedBy = createEWWayBillRequest.EwWayBillModifiedBy
+	ewWayBill.Status = createEWWayBillRequest.Status
 
 	dataToStore, _ := json.Marshal(ewWayBill)
 
-	err := stub.PutState(ewWayBill.EwWayBillNumber, []byte(dataToStore))
+	err := DumpData(stub, ewWayBill.EwWayBillNumber, string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Export Warehouse Way Bill to ledger", err)
 		return nil, err

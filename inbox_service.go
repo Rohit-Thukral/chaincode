@@ -71,15 +71,16 @@ func (t *InboxService) createEWWayBillArray(stub shim.ChaincodeStubInterface, tm
 	var allEWWayBillIndex AllEWWayBill
 	var err error
 	var shipmentWayBillArray []EWWayBill
-
+	fmt.Println("createEWWaybillArray.........starting")
 	allEWWayBillIndex, err = FetchEWWayBillIndex(stub, "AllEWWayBill")
+	fmt.Println("allEWWayBillIndex.........", allEWWayBillIndex)
 
 	lenOfArray := len(allEWWayBillIndex.AllWayBillNumber)
 
 	for i := 0; i < lenOfArray; i++ {
 		var tmpShipmentWayBill EWWayBill
 		tmpShipmentWayBill, err = fetchEWWayBillData(stub, allEWWayBillIndex.AllWayBillNumber[i])
-
+		fmt.Println("tmpShipmentWayBill---------->", tmpShipmentWayBill)
 		if err != nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, "", tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian) == "true" {
 			shipmentWayBillArray = append(shipmentWayBillArray, tmpShipmentWayBill)
 		}
@@ -89,7 +90,7 @@ func (t *InboxService) createEWWayBillArray(stub shim.ChaincodeStubInterface, tm
 	return shipmentWayBillArray
 }
 
-func (t *InboxService) checkInboxCondition(entityId string, entityType string, inboxName string, status string, consignerName string, consigneeName string, carrier string, custodianHistory []string, custodian string) string {
+func (t *InboxService) checkInboxCondition(entityId string, entityType string, inboxName string, status string, consignerName string, consigneeName string, carrier string, custodianHistory []CustodianHistoryDetail, custodian string) string {
 	var util Utility
 	fmt.Println("entityType-->", entityType, "InboxNmae", inboxName, "ConsignerName-->"+consignerName, "entityId--->", entityId)
 	if entityType == "Manufacturer" {
@@ -161,7 +162,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 			return "true"
 		}
 
-		if inboxName == "Delivered" && (status == "EWWaybillAtVessel" || status == "EWWaybillAtOCCargo" || status == "EWWaybillDelivered") && util.hasString(custodianHistory, entityId) {
+		if inboxName == "Delivered" && (status == "EWWaybillAtVessel" || status == "EWWaybillAtOCCargo" || status == "EWWaybillDelivered") && util.hasCustodian(custodianHistory, entityId) {
 			return "true"
 		}
 	}
@@ -171,7 +172,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 			return "true"
 		}
 
-		if inboxName == "Delivered" && (status == "EWWaybillAtOCCargo" || status == "EWWaybillDelivered") && util.hasString(custodianHistory, entityId) {
+		if inboxName == "Delivered" && (status == "EWWaybillAtOCCargo" || status == "EWWaybillDelivered") && util.hasCustodian(custodianHistory, entityId) {
 			return "true"
 		}
 	}

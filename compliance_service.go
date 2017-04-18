@@ -71,7 +71,7 @@ func saveEntityComplianceDocumentMapping(stub shim.ChaincodeStubInterface, entit
 	fmt.Println("entity compliance document mappping data..", dataToStore)
 	entitykey := entityname + "ComDoc"
 	fmt.Println("key for entity compliance document mapping", entitykey)
-	err := stub.PutState(entitykey, []byte(dataToStore))
+	err := DumpData(stub, entitykey, string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Entity compliance Mapping to ledger", err)
 		return nil, err
@@ -91,7 +91,7 @@ func saveEntityComplianceDocumentMapping(stub shim.ChaincodeStubInterface, entit
 func saveComplianceDocumentIds(stub shim.ChaincodeStubInterface, comids ComplianceIds) ([]byte, error) {
 	dataToStore, _ := json.Marshal(comids)
 	fmt.Println("save compliance document ids..", dataToStore)
-	err := stub.PutState("CompDocIDs", []byte(dataToStore))
+	err := DumpData(stub, "CompDocIDs", string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save complianceIds to ledger", err)
 		return nil, err
@@ -121,7 +121,7 @@ func saveComplianceDocument(stub shim.ChaincodeStubInterface, complianceId strin
 	dataToStore, _ := json.Marshal(compDoc)
 	fmt.Println("compliance id ....", complianceId)
 	fmt.Println("compliance documnt to store.....", dataToStore)
-	err := stub.PutState(complianceId, []byte(dataToStore))
+	err := DumpData(stub, complianceId, string(dataToStore))
 	if err != nil {
 		fmt.Println("compliance document not uploaded to ledger", err)
 		return err

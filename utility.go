@@ -1,17 +1,14 @@
 package main
 
-
 import (
 	"encoding/json"
 	"fmt"
-	
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 type Utility struct {
-
 }
-
 
 func (t *Utility) fetchShipmentData(stub shim.ChaincodeStubInterface, shipmentNumber string) (ShipmentWayBill, error) {
 	fmt.Println("Entering fetchShipmentData " + shipmentNumber)
@@ -36,15 +33,15 @@ func (t *Utility) fetchShipmentData(stub shim.ChaincodeStubInterface, shipmentNu
 }
 
 func (t *Utility) fetchShipmentIndex(stub shim.ChaincodeStubInterface, callingEntityName string, status string) ([]ShipmentWayBill, error) {
-	fmt.Println("Entering fetchShipmentIndex  callingEntityName : " + callingEntityName + "   ----  status : "+status)
+	fmt.Println("Entering fetchShipmentIndex  callingEntityName : " + callingEntityName + "   ----  status : " + status)
 	allShipmentIndex := ShipmentWayBillIndex{}
 	var shipmentIndexArr []string
 	var tmpShipmentIndex string
-	
+
 	var shipmentDataArray []ShipmentWayBill
 
 	var util Utility
-	
+
 	indexByte, err := stub.GetState("ShipmentWayBillIndex")
 	if err != nil {
 		fmt.Println("Could not retrive Shipment Index", err)
@@ -67,11 +64,11 @@ func (t *Utility) fetchShipmentIndex(stub shim.ChaincodeStubInterface, callingEn
 	for i := 0; i < lenOfArray; i++ {
 		var shipmentData ShipmentWayBill
 		tmpShipmentIndex = shipmentIndexArr[i]
-		shipmentData,err = util.fetchShipmentData(stub, tmpShipmentIndex);
-		if(err == nil && ((shipmentData.Custodian == callingEntityName && status != "ALL") || (util.hasPermission(shipmentData.CustodianHistory , callingEntityName) && status == "ALL"))) {
-			shipmentDataArray = append(shipmentDataArray, shipmentData);
+		shipmentData, err = util.fetchShipmentData(stub, tmpShipmentIndex)
+		if err == nil && ((shipmentData.Custodian == callingEntityName && status != "ALL") || (util.hasCustodian(shipmentData.CustodianHistory, callingEntityName) && status == "ALL")) {
+			shipmentDataArray = append(shipmentDataArray, shipmentData)
 		}
-		
+
 	}
 	fmt.Println("shipmentDataArray : ======================")
 	fmt.Println(shipmentDataArray)
@@ -92,12 +89,22 @@ func (t *Utility) hasPermission(acl []string, currUser string) bool {
 	return false
 }
 
-
 func (t *Utility) hasString(strArray []string, str string) bool {
 	lenOfArray := len(strArray)
 
 	for i := 0; i < lenOfArray; i++ {
 		if strArray[i] == str {
+			return true
+		}
+	}
+
+	return false
+}
+func (t *Utility) hasCustodian(custodianhistory []CustodianHistoryDetail, entityname string) bool {
+	lenOfArray := len(custodianhistory)
+
+	for i := 0; i < lenOfArray; i++ {
+		if custodianhistory[i].CustodianName == entityname {
 			return true
 		}
 	}

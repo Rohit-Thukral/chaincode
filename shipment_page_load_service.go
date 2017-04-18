@@ -1,67 +1,116 @@
 package main
 
-
 import (
 	"encoding/json"
 	"fmt"
-	
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-
 type ShipmentPageLoadService struct {
 }
-
-
 
 type ShipmentPageLoadRequest struct {
 	CallingEntityName string `json:"callingEntityName"`
 }
 
 type ConsignerShipmentPageLoadResponse struct {
-	ConsignerId        	string `json:"consignerId"`
-	ConsignerName      	string `json:"consignerName"`
-	ConsignerType      	string `json:"consignerType"`
-	ConsignerAddress   	string `json:"consignerAddress"`
-	ConsignerRegNumber 	string `json:"consignerRegNumber"`
-	ConsignerCountry 	string `json:"consignerCountry"`
+	ConsignerId        string `json:"consignerId"`
+	ConsignerName      string `json:"consignerName"`
+	ConsignerType      string `json:"consignerType"`
+	ConsignerAddress   string `json:"consignerAddress"`
+	ConsignerRegNumber string `json:"consignerRegNumber"`
+	ConsignerCountry   string `json:"consignerCountry"`
 }
 
 type ConsigneeShipmentPageLoadResponse struct {
-	ConsigneeId      		string 		`json:"consigneeId"`
-	ConsigneeName    		string 		`json:"consigneeName"`
-	ConsigneeAddress 		string 		`json:"consigneeAddress"`
-	ConsigneeCountry 		string 		`json:"consigneeCountry"`
-	ConsigneeRegNumber 		string 		`json:"consigneeRegNumber"`
+	ConsigneeId        string `json:"consigneeId"`
+	ConsigneeName      string `json:"consigneeName"`
+	ConsigneeAddress   string `json:"consigneeAddress"`
+	ConsigneeCountry   string `json:"consigneeCountry"`
+	ConsigneeRegNumber string `json:"consigneeRegNumber"`
 }
 
-
 type CarrierResponse struct {
-	CarrierID 		string			`json:"CarrierID"`
-	Name 			string			`json:"Name"`
+	CarrierID string `json:"CarrierID"`
+	Name      string `json:"Name"`
 }
 
 type ShipmentPageLoadResponse struct {
-	CallingEntityName 			string                              `json:"callingEntityName"`
-	ConsignerId        			string 								`json:"consignerId"`
-	ConsignerName      			string 								`json:"consignerName"`
-	ConsignerType      			string 								`json:"consignerType"`
-	ConsignerAddress   			string 								`json:"consignerAddress"`
-	ConsignerRegNumber 			string 								`json:"consignerRegNumber"`
-	ConsignerCountry 			string 								`json:"consignerCountry"`
-	Consignee         			[]ConsigneeShipmentPageLoadResponse `json:"consignee"`
-	Carrier          	 		[]CarrierResponse                   `json:"carrier"`
-	ModelNames        			[]string                            `json:"modelNames"`
+	CallingEntityName  string                              `json:"callingEntityName"`
+	ConsignerId        string                              `json:"consignerId"`
+	ConsignerName      string                              `json:"consignerName"`
+	ConsignerType      string                              `json:"consignerType"`
+	ConsignerAddress   string                              `json:"consignerAddress"`
+	ConsignerRegNumber string                              `json:"consignerRegNumber"`
+	ConsignerCountry   string                              `json:"consignerCountry"`
+	Consignee          []ConsigneeShipmentPageLoadResponse `json:"consignee"`
+	Carrier            []CarrierResponse                   `json:"carrier"`
+	ModelNames         []string                            `json:"modelNames"`
+	WaybillIds         EntityWayBillMapping                `json:"waybillIds"`
 }
 
+type CountryEntityMappingRequest struct {
+	CountryFrom string `json:"countryFrom"`
+}
+type CountryEntityMappingResponse struct {
+	WareHouseList []ConsigneeShipmentPageLoadResponse `json:"wareHouseList"`
+}
 
+func (t *ShipmentPageLoadService) GetCountryWarehouse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering GetCountryWarehouse New " + args[0])
+	var thisClass ShipmentPageLoadService
+
+	var err error
+	var consigneeArr CountryEntityMappingResponse
+	var allEntities AllEntities
+	request := CountryEntityMappingRequest{}
+
+	json.Unmarshal([]byte(args[0]), &request)
+
+	allEntities, err = thisClass.fetchAllEntities(stub)
+	if err == nil {
+		lenOfArray := len(allEntities.EntityArr)
+		fmt.Println("===lenOfArray all entities===", lenOfArray)
+
+		for i := 0; i < lenOfArray; i++ {
+			var tmpConsigneeResponse ConsigneeShipmentPageLoadResponse
+			var tmpEntity Entity
+
+			tmpEntity, err = thisClass.fetchEntities(stub, allEntities.EntityArr[i])
+
+			if err == nil {
+				if tmpEntity.EntityCountry == request.CountryFrom && tmpEntity.EntityType == "Warehouse" {
+					tmpConsigneeResponse.ConsigneeId = tmpEntity.EntityId
+					tmpConsigneeResponse.ConsigneeName = tmpEntity.EntityName
+					tmpConsigneeResponse.ConsigneeAddress = tmpEntity.EntityAddress
+					tmpConsigneeResponse.ConsigneeCountry = tmpEntity.EntityCountry
+					tmpConsigneeResponse.ConsigneeRegNumber = tmpEntity.EntityRegNumber
+					consigneeArr.WareHouseList = append(consigneeArr.WareHouseList, tmpConsigneeResponse)
+				}
+			}
+		}
+	} else {
+		fmt.Println("Error while fetching workflow data", err)
+		return json.Marshal(consigneeArr.WareHouseList)
+	}
+
+	fmt.Println("consigneeArr : ======================")
+	fmt.Println(consigneeArr)
+	fmt.Println("consigneeArr : ======================")
+
+	fmt.Println("Exiting GetCountryWarehouse ")
+	datatoreturn, _ := json.Marshal(consigneeArr.WareHouseList)
+	return []byte(datatoreturn), nil
+
+}
 
 func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering ShipmentPageLoad New " + args[0])
 	var thisClass ShipmentPageLoadService
 
 	var err error
-	
+
 	var tmpEntity Entity
 
 	var consignerDetails ConsignerShipmentPageLoadResponse
@@ -69,7 +118,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 	var carrier []CarrierResponse
 	var response ShipmentPageLoadResponse
 	var assetModelDetails AssetModelDetails
-
+	var waybillIds EntityWayBillMapping
 	request := thisClass.parseShipmentPageLoadRequest(args[0])
 
 	tmpEntity, err = thisClass.fetchEntities(stub, request.CallingEntityName)
@@ -80,14 +129,13 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 		consignerDetails.ConsignerAddress = tmpEntity.EntityAddress
 		consignerDetails.ConsignerRegNumber = tmpEntity.EntityRegNumber
 		consignerDetails.ConsignerCountry = tmpEntity.EntityCountry
-		
+
 	}
-	
 
 	assetModelDetails, err = thisClass.fetchAssetModelName(stub)
 	fmt.Println("consignerDetails.Id == " + consignerDetails.ConsignerId)
 	if consignerDetails.ConsignerId != "" {
-		consigneeArr, carrier, err = thisClass.fetchCorrespondingConsignees(stub, consignerDetails)
+		consigneeArr, carrier, waybillIds, err = thisClass.fetchCorrespondingConsignees(stub, consignerDetails)
 		response.CallingEntityName = request.CallingEntityName
 
 		response.ConsignerId = consignerDetails.ConsignerId
@@ -99,10 +147,10 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 
 		response.Consignee = consigneeArr
 		response.Carrier = carrier
+		response.WaybillIds = waybillIds
 		response.ModelNames = assetModelDetails.ModelNames
 	}
 
-	
 	fmt.Println("response : ======================")
 	fmt.Println(response)
 	fmt.Println("response : ======================")
@@ -114,48 +162,55 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 
 }
 
-func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.ChaincodeStubInterface, consignerDetails ConsignerShipmentPageLoadResponse) ([]ConsigneeShipmentPageLoadResponse, []CarrierResponse, error) {
+func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.ChaincodeStubInterface, consignerDetails ConsignerShipmentPageLoadResponse) ([]ConsigneeShipmentPageLoadResponse, []CarrierResponse, EntityWayBillMapping, error) {
 	fmt.Println("Entering fetchCorrespondingConsignees consignerDetails : ")
-	fmt.Println("===consignerDetails===",consignerDetails)
+	fmt.Println("===consignerDetails===", consignerDetails)
 
 	var err error
 	var thisClass ShipmentPageLoadService
 
 	var consigneeArr []ConsigneeShipmentPageLoadResponse
-	
+
 	var carrier []CarrierResponse
 	var allEntities AllEntities
-	
+	var waybillIds EntityWayBillMapping
 
 	allEntities, err = thisClass.fetchAllEntities(stub)
 	if err == nil {
 		lenOfArray := len(allEntities.EntityArr)
-		fmt.Println("===lenOfArray all entities===",lenOfArray)
-		
+		fmt.Println("===lenOfArray all entities===", lenOfArray)
+
 		for i := 0; i < lenOfArray; i++ {
 			var tmpConsigneeResponse ConsigneeShipmentPageLoadResponse
 			var tmpEntity Entity
-			
-			tmpEntity, err  = thisClass.fetchEntities(stub, allEntities.EntityArr[i])
-			fmt.Println("===tmpEntity===",tmpEntity)
-			fmt.Println("===consignerDetails.ConsignerType===",consignerDetails.ConsignerType)
-			fmt.Println("===tmpEntity.EntityType===",tmpEntity.EntityType)
-			fmt.Println("===consignerDetails.ConsignerCountry===",consignerDetails.ConsignerCountry)
-			fmt.Println("===tmpEntity.EntityCountry===",tmpEntity.EntityCountry)
-			fmt.Println("===consignerDetails.ConsignerId===",consignerDetails.ConsignerId)
-			fmt.Println("===tmpEntity.EntityId ===",tmpEntity.EntityId )
-			
-			if(err == nil) {
-				if(tmpEntity.EntityId != consignerDetails.ConsignerId && ((consignerDetails.ConsignerType == "Manufacturer" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "Warehouse" && tmpEntity.EntityType == "Warehouse" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) )) {
-					tmpConsigneeResponse.ConsigneeId 		= tmpEntity.EntityId
-					tmpConsigneeResponse.ConsigneeName 		= tmpEntity.EntityName
-					tmpConsigneeResponse.ConsigneeAddress 	= tmpEntity.EntityAddress
-					tmpConsigneeResponse.ConsigneeCountry 	= tmpEntity.EntityCountry
+
+			tmpEntity, err = thisClass.fetchEntities(stub, allEntities.EntityArr[i])
+			fmt.Println("===tmpEntity===", tmpEntity)
+			fmt.Println("===consignerDetails.ConsignerType===", consignerDetails.ConsignerType)
+			fmt.Println("===tmpEntity.EntityType===", tmpEntity.EntityType)
+			fmt.Println("===consignerDetails.ConsignerCountry===", consignerDetails.ConsignerCountry)
+			fmt.Println("===tmpEntity.EntityCountry===", tmpEntity.EntityCountry)
+			fmt.Println("===consignerDetails.ConsignerId===", consignerDetails.ConsignerId)
+			fmt.Println("===tmpEntity.EntityId ===", tmpEntity.EntityId)
+
+			if err == nil {
+				if tmpEntity.EntityId != consignerDetails.ConsignerId && ((consignerDetails.ConsignerType == "Manufacturer" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "Warehouse" && tmpEntity.EntityType == "Warehouse" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry)) {
+					tmpConsigneeResponse.ConsigneeId = tmpEntity.EntityId
+					tmpConsigneeResponse.ConsigneeName = tmpEntity.EntityName
+					tmpConsigneeResponse.ConsigneeAddress = tmpEntity.EntityAddress
+					tmpConsigneeResponse.ConsigneeCountry = tmpEntity.EntityCountry
 					tmpConsigneeResponse.ConsigneeRegNumber = tmpEntity.EntityRegNumber
 					consigneeArr = append(consigneeArr, tmpConsigneeResponse)
+					var werr error
+					if consignerDetails.ConsignerType == "Warehouse" {
+						waybillIds, werr = fetchEntityWayBillMappingData(stub, tmpEntity.EntityId)
+						if werr != nil {
+							fmt.Println("Error while fetching waybill id based on entity ", werr)
+						}
+					}
 				}
 
-				if(consignerDetails.ConsignerCountry == tmpEntity.EntityCountry && tmpEntity.EntityType == "ThirdPartyLogistic" ) {
+				if consignerDetails.ConsignerCountry == tmpEntity.EntityCountry && tmpEntity.EntityType == "ThirdPartyLogistic" {
 					var tmpCarrier CarrierResponse
 					tmpCarrier.CarrierID = tmpEntity.EntityId
 					tmpCarrier.Name = tmpEntity.EntityName
@@ -166,9 +221,9 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 		}
 	} else {
 		fmt.Println("Error while fetching workflow data", err)
-		return consigneeArr, carrier, err
+		return consigneeArr, carrier, waybillIds, err
 	}
-	
+
 	fmt.Println("consigneeArr : ======================")
 	fmt.Println(consigneeArr)
 	fmt.Println("consigneeArr : ======================")
@@ -177,7 +232,7 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 	fmt.Println("carrier : ======================")
 	fmt.Println("Exiting fetchCorrespondingConsignees ")
 
-	return consigneeArr, carrier, nil
+	return consigneeArr, carrier, waybillIds, nil
 
 }
 
@@ -259,7 +314,7 @@ func (t *ShipmentPageLoadService) fetchAllEntities(stub shim.ChaincodeStubInterf
 		fmt.Println("Could not save Shipment to ledger", marshErr)
 		return allEntities, marshErr
 	}
-	
+
 	fmt.Println("allEntities : ======================")
 	fmt.Println(allEntities)
 	fmt.Println("allEntities : ======================")

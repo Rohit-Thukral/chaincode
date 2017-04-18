@@ -33,8 +33,10 @@ func CreateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	shipmentDetails.TpComments = wayBillRequest.TpComments
 	shipmentDetails.WayBillCreationDate = wayBillRequest.WayBillCreationDate
 	shipmentDetails.WayBillCreatedBy = wayBillRequest.WayBillCreatedBy
+	shipmentDetails.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentDetails)
 
 	UpdatePalletCartonAssetByWayBill(stub, wayBillRequest, WAYBILL, "")
+	
 	return saveShipmentWayBill(stub, shipmentDetails)
 }
 

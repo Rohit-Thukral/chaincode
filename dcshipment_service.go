@@ -26,8 +26,10 @@ func CreateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, 
 	fmt.Println("Entering DC Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 	UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, DCSHIPMENT, "")
-	saveResult,errMsg := saveShipmentWayBill(stub, shipmentRequest)
-	
+	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
+	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
+
+	/*********Storing Shipment number in shipmentwaybillindex array to retrieve through inbox*************/
 	shipmentwaybillidsRequest := ShipmentWayBillIndex{}
 	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
 	fmt.Println("shipment ids.....", shipmentwaybillids)
@@ -39,7 +41,9 @@ func CreateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, 
 		fmt.Println("Updated entity shipmentwaybillindex", shipmentwaybillidsRequest)
 		SaveShipmentWaybillIndex(stub, shipmentwaybillidsRequest)
 	}
-	return saveResult,errMsg
+	/********* End Storing Shipment number in shipmentwaybillindex array to retrieve through inbox*************/
+
+	return saveResult, errMsg
 }
 
 /************** Create DC Shipment Ends ************************/
