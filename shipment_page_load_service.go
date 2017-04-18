@@ -92,7 +92,7 @@ func (t *ShipmentPageLoadService) GetCountryWarehouse(stub shim.ChaincodeStubInt
 		}
 	} else {
 		fmt.Println("Error while fetching workflow data", err)
-		return json.Marshal(consigneeArr.WareHouseList)
+		return json.Marshal(consigneeArr)
 	}
 
 	fmt.Println("consigneeArr : ======================")
@@ -100,7 +100,7 @@ func (t *ShipmentPageLoadService) GetCountryWarehouse(stub shim.ChaincodeStubInt
 	fmt.Println("consigneeArr : ======================")
 
 	fmt.Println("Exiting GetCountryWarehouse ")
-	datatoreturn, _ := json.Marshal(consigneeArr.WareHouseList)
+	datatoreturn, _ := json.Marshal(consigneeArr)
 	return []byte(datatoreturn), nil
 
 }
