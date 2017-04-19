@@ -145,9 +145,9 @@ type ShipmentWayBill struct {
 	WayBillModifiedBy     string                    `json:"waybillModifiedBy"`
 }
 type SupportiveDocumentsList struct {
-	DocumentType  string `json:documentType`
-	DocumentHash  string `json:documentHash`
-	DocumentTitle string `json:documentTitle`
+	DocumentType  string `json:"documentType"`
+	DocumentHash  string `json:"documentHash"`
+	DocumentTitle string `json:"documentTitle"`
 }
 type AllEWWayBill struct {
 	AllWayBillNumber []string `json:"allWayBillNumber"`
