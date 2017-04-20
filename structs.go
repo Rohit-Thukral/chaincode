@@ -183,8 +183,13 @@ type EWWayBill struct {
 }
 
 type EntityWayBillMapping struct {
-	WayBillsNumber []string
+	WayBillsNumber []EntityWayBillMappingDetail
 }
+type EntityWayBillMappingDetail struct {
+    WayBillNumber string
+    Country       string
+}
+
 type CreateEntityWayBillMappingRequest struct {
 	EntityName     string
 	WayBillsNumber []string

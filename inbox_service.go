@@ -56,7 +56,7 @@ func (t *InboxService) createShipmentArray(stub shim.ChaincodeStubInterface, tmp
 			fmt.Println("Error while retrieveing the shipment details for shipmentid", shipmentWayBillIndex.ShipmentNumber[i], "error-->", err)
 			return shipmentWayBillArray
 		}
-		if err == nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, tmpShipmentWayBill.Carrier, tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian) == "true" {
+		if err == nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, tmpShipmentWayBill.Carrier, tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian, tmpShipmentWayBill.EntityName) == "true" {
 			shipmentWayBillArray = append(shipmentWayBillArray, tmpShipmentWayBill)
 			fmt.Println("shipmentWayBillArray--->", shipmentWayBillArray)
 		}
@@ -81,7 +81,7 @@ func (t *InboxService) createEWWayBillArray(stub shim.ChaincodeStubInterface, tm
 		var tmpShipmentWayBill EWWayBill
 		tmpShipmentWayBill, err = fetchEWWayBillData(stub, allEWWayBillIndex.AllWayBillNumber[i])
 		fmt.Println("tmpShipmentWayBill---------->", tmpShipmentWayBill)
-		if err != nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, "", tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian) == "true" {
+		if err == nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, "", tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian,"") == "true" {
 			shipmentWayBillArray = append(shipmentWayBillArray, tmpShipmentWayBill)
 		}
 
@@ -90,7 +90,7 @@ func (t *InboxService) createEWWayBillArray(stub shim.ChaincodeStubInterface, tm
 	return shipmentWayBillArray
 }
 
-func (t *InboxService) checkInboxCondition(entityId string, entityType string, inboxName string, status string, consignerName string, consigneeName string, carrier string, custodianHistory []CustodianHistoryDetail, custodian string) string {
+func (t *InboxService) checkInboxCondition(entityId string, entityType string, inboxName string, status string, consignerName string, consigneeName string, carrier string, custodianHistory []CustodianHistoryDetail, custodian string, entityName string) string {
 	var util Utility
 	fmt.Println("entityType-->", entityType, "InboxNmae", inboxName, "ConsignerName-->"+consignerName, "entityId--->", entityId)
 	if entityType == "Manufacturer" {
@@ -139,7 +139,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 	}
 
 	if entityType == "Warehouse" {
-		if inboxName == "Scheduled" && ((status == "DCWaybillCreated" && entityId == custodian) || (status == "EWWaybillAtOCCargo" || consigneeName == entityId)) {
+		if inboxName == "Scheduled" && ((status == "DCWaybillCreated" && entityId == entityName) || (status == "EWWaybillAtOCCargo" || consigneeName == entityId)) {
 			return "true"
 		}
 		if inboxName == "Created" && status == "EWWaybillCreated" && consignerName == entityId {

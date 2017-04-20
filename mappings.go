@@ -56,35 +56,38 @@ func saveEntityWayBillMapping(stub shim.ChaincodeStubInterface, createEntityWayB
 /************** Create Entity WayBill Mapping Ends ************************/
 
 /************** Update Entity WayBill Mapping Starts ************************/
-func UpdateEntityWayBillMapping(stub shim.ChaincodeStubInterface, entityName string, wayBillsNumber string) ([]byte, error) {
-	fmt.Println("Entering Update Entity WayBill Mapping")
-	entityWayBillMappingRequest := CreateEntityWayBillMappingRequest{}
-	entityWayBillMapping, err := fetchEntityWayBillMappingData(stub, entityName)
+func UpdateEntityWayBillMapping(stub shim.ChaincodeStubInterface, entityName string, wayBillsNumber string, countryFrom string) ([]byte, error) {
+    fmt.Println("Entering Update Entity WayBill Mapping")
+    entityWayBillMappingRequest := CreateEntityWayBillMappingRequest{}
+    entityWayBillMapping, err := fetchEntityWayBillMappingData(stub, entityName)
+    entityWayBillMappingDetail := EntityWayBillMappingDetail{}
+    entityWayBillMappingDetail.WayBillNumber = wayBillsNumber
+    entityWayBillMappingDetail.Country = countryFrom
+    if err != nil {
+        entityWayBillMappingRequest.EntityName = entityName
+        entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMappingRequest.WayBillsNumber, entityWayBillMappingDetail)
+        saveEntityWayBillMapping(stub, entityWayBillMappingRequest)
+    } else {
+        entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMapping.WayBillsNumber, entityWayBillMappingDetail)
+        fmt.Println("Updated Entity", entityWayBillMappingRequest)
+        dataToStore, _ := json.Marshal(entityWayBillMappingRequest)
+        err := DumpData(stub, entityName, string(dataToStore))
+        if err != nil {
+            fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
+            return nil, err
+        }
+    }
+    resp := BlockchainResponse{}
+    resp.Err = "000"
+    resp.Message = entityName
 
-	if err != nil {
-		entityWayBillMappingRequest.EntityName = entityName
-		entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMappingRequest.WayBillsNumber, wayBillsNumber)
-		saveEntityWayBillMapping(stub, entityWayBillMappingRequest)
-	} else {
-		entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMapping.WayBillsNumber, wayBillsNumber)
-		fmt.Println("Updated Entity", entityWayBillMappingRequest)
-		dataToStore, _ := json.Marshal(entityWayBillMappingRequest)
-		err := DumpData(stub, entityName, string(dataToStore))
- 		if err != nil {
-			fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
-			return nil, err
-		}
-	}
-	resp := BlockchainResponse{}
-	resp.Err = "000"
-	resp.Message = entityName
+    respString, _ := json.Marshal(resp)
 
-	respString, _ := json.Marshal(resp)
-
-	fmt.Println("Successfully saved Entity WayBill Mapping")
-	return []byte(respString), nil
+    fmt.Println("Successfully saved Entity WayBill Mapping")
+    return []byte(respString), nil
 
 }
+
 
 /************** Get Entity WayBill Mapping Starts ************************/
 func GetEntityWayBillMapping(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
