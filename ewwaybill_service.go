@@ -49,16 +49,19 @@ func CreateEWWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 
 		}
 		wayBills, _ := fetchEntityWayBillMappingData(stub, ewWayBillRequest.Consigner)
-		var tmpWayBillArray []string
 
+		var entityWayBillMappingArr []EntityWayBillMappingDetail
+		var createEntityWayBillMappingRequest CreateEntityWayBillMappingRequest
 		for k := 0; k < len(wayBills.WayBillsNumber); k++ {
 			for j := 0; j < len(ewWayBillRequest.WayBillsNumber); j++ {
-				if ewWayBillRequest.WayBillsNumber[j] != wayBills.WayBillsNumber[k] {
-					tmpWayBillArray = append(tmpWayBillArray, wayBills.WayBillsNumber[k])
+				if ewWayBillRequest.WayBillsNumber[j] != wayBills.WayBillsNumber[k].WayBillNumber {
+					entityWayBillMappingArr = append(entityWayBillMappingArr, wayBills.WayBillsNumber[k])
 				}
 			}
 		}
-		ewWayBillRequest.WayBillsNumber = tmpWayBillArray
+		createEntityWayBillMappingRequest.EntityName = ewWayBillRequest.Consigner
+		createEntityWayBillMappingRequest.WayBillsNumber = entityWayBillMappingArr
+		saveEntityWayBillMapping(stub, createEntityWayBillMappingRequest)
 	}
 	ewWayBillRequest.CustodianHistory = UpdateEWWaybillCustodianHistoryList(stub, ewWayBillRequest)
 	saveResult, errMsg := saveEWWayBill(stub, ewWayBillRequest)
