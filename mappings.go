@@ -36,7 +36,7 @@ func saveEntityWayBillMapping(stub shim.ChaincodeStubInterface, createEntityWayB
 
 	dataToStore, _ := json.Marshal(entityWayBillMapping)
 
-	err := DumpData(stub, createEntityWayBillMappingRequest.EntityName, string(dataToStore))
+	err := DumpData(stub, createEntityWayBillMappingRequest.EntityName+ENTITY_WAYBILL_MAPPING_SUFFIX, string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
 		return nil, err
@@ -57,37 +57,36 @@ func saveEntityWayBillMapping(stub shim.ChaincodeStubInterface, createEntityWayB
 
 /************** Update Entity WayBill Mapping Starts ************************/
 func UpdateEntityWayBillMapping(stub shim.ChaincodeStubInterface, entityName string, wayBillsNumber string, countryFrom string) ([]byte, error) {
-    fmt.Println("Entering Update Entity WayBill Mapping")
-    entityWayBillMappingRequest := CreateEntityWayBillMappingRequest{}
-    entityWayBillMapping, err := fetchEntityWayBillMappingData(stub, entityName)
-    entityWayBillMappingDetail := EntityWayBillMappingDetail{}
-    entityWayBillMappingDetail.WayBillNumber = wayBillsNumber
-    entityWayBillMappingDetail.Country = countryFrom
-    if err != nil {
-        entityWayBillMappingRequest.EntityName = entityName
-        entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMappingRequest.WayBillsNumber, entityWayBillMappingDetail)
-        saveEntityWayBillMapping(stub, entityWayBillMappingRequest)
-    } else {
-        entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMapping.WayBillsNumber, entityWayBillMappingDetail)
-        fmt.Println("Updated Entity", entityWayBillMappingRequest)
-        dataToStore, _ := json.Marshal(entityWayBillMappingRequest)
-        err := DumpData(stub, entityName, string(dataToStore))
-        if err != nil {
-            fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
-            return nil, err
-        }
-    }
-    resp := BlockchainResponse{}
-    resp.Err = "000"
-    resp.Message = entityName
+	fmt.Println("Entering Update Entity WayBill Mapping")
+	entityWayBillMappingRequest := CreateEntityWayBillMappingRequest{}
+	entityWayBillMapping, err := fetchEntityWayBillMappingData(stub, entityName)
+	entityWayBillMappingDetail := EntityWayBillMappingDetail{}
+	entityWayBillMappingDetail.WayBillNumber = wayBillsNumber
+	entityWayBillMappingDetail.Country = countryFrom
+	if err != nil {
+		entityWayBillMappingRequest.EntityName = entityName
+		entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMappingRequest.WayBillsNumber, entityWayBillMappingDetail)
+		saveEntityWayBillMapping(stub, entityWayBillMappingRequest)
+	} else {
+		entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMapping.WayBillsNumber, entityWayBillMappingDetail)
+		fmt.Println("Updated Entity", entityWayBillMappingRequest)
+		dataToStore, _ := json.Marshal(entityWayBillMappingRequest)
+		err := DumpData(stub, entityName+ENTITY_WAYBILL_MAPPING_SUFFIX, string(dataToStore))
+		if err != nil {
+			fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
+			return nil, err
+		}
+	}
+	resp := BlockchainResponse{}
+	resp.Err = "000"
+	resp.Message = entityName
 
-    respString, _ := json.Marshal(resp)
+	respString, _ := json.Marshal(resp)
 
-    fmt.Println("Successfully saved Entity WayBill Mapping")
-    return []byte(respString), nil
+	fmt.Println("Successfully saved Entity WayBill Mapping")
+	return []byte(respString), nil
 
 }
-
 
 /************** Get Entity WayBill Mapping Starts ************************/
 func GetEntityWayBillMapping(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -107,7 +106,7 @@ func GetEntityWayBillMapping(stub shim.ChaincodeStubInterface, args []string) ([
 func fetchEntityWayBillMappingData(stub shim.ChaincodeStubInterface, entityName string) (EntityWayBillMapping, error) {
 	var entityWayBillMapping EntityWayBillMapping
 
-	indexByte, err := stub.GetState(entityName)
+	indexByte, err := stub.GetState(entityName + ENTITY_WAYBILL_MAPPING_SUFFIX)
 	if err != nil {
 		fmt.Println("Could not retrive Entity WayBill Mapping ", err)
 		return entityWayBillMapping, err

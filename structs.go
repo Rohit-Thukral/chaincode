@@ -154,32 +154,32 @@ type AllEWWayBill struct {
 }
 
 type EWWayBill struct {
-	EwWayBillNumber       string
-	WayBillsNumber        []string
-	ShipmentsNumber       []string
-	CountryFrom           string
-	CountryTo             string
-	Consigner             string
-	Consignee             string
-	Custodian             string
-	Status                string
-	CustodianHistory      []CustodianHistoryDetail `json:"custodianHistory"`
-	CustodianTime         string
-	PersonConsigningGoods string
-	Comments              string
-	PalletsSerialNumber   []string
-	AddressOfConsigner    string
-	AddressOfConsignee    string
-	ConsignerRegNumber    string
-	VesselType            string
-	VesselNumber          string
-	ContainerNumber       string
-	ServiceType           string
+	EwWayBillNumber       string                    `json:"ewWaybillNumber"`
+	WayBillsNumber        []string                  `json:"waybillsNumber"`
+	ShipmentsNumber       []string                  `json:"shipmentsNumber"`
+	CountryFrom           string                    `json:"countryFrom"`
+	CountryTo             string                    `json:"countryTo"`
+	Consigner             string                    `json:"consigner"`
+	Consignee             string                    `json:"consignee"`
+	Custodian             string                    `json:"custodian"`
+	Status                string                    `json:"status"`
+	CustodianHistory      []CustodianHistoryDetail  `json:"custodianHistory"`
+	CustodianTime         string                    `json:"custodianTime"`
+	PersonConsigningGoods string                    `json:"personConsigningGoods"`
+	Comments              string                    `json:"comments"`
+	PalletsSerialNumber   []string                  `json:"palletsSerialNumber"`
+	AddressOfConsigner    string                    `json:"addressOfConsigner"`
+	AddressOfConsignee    string                    `json:"addressOfConsignee"`
+	ConsignerRegNumber    string                    `json:"consignerRegNumber"`
+	VesselType            string                    `json:"vesselType"`
+	VesselNumber          string                    `json:"vesselNumber"`
+	ContainerNumber       string                    `json:"containerNumber"`
+	ServiceType           string                    `json:"serviceType"`
 	SupportiveDocuments   []SupportiveDocumentsList `json:"supportiveDocumentsList"`
-	EwWayBillCreationDate string
-	EwWayBillCreatedBy    string
-	EwWayBillModifiedDate string
-	EwWayBillModifiedBy   string
+	EwWayBillCreationDate string                    `json:"ewWaybillCreationDate"`
+	EwWayBillCreatedBy    string                    `json:"ewWaybillCreatedBy"`
+	EwWayBillModifiedDate string                    `json:"ewWaybillModifiedBy"`
+	EwWayBillModifiedBy   string                    `json:"ewWaybillModifiedBy"`
 }
 
 type EntityWayBillMapping struct {
