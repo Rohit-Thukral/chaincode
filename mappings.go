@@ -36,7 +36,7 @@ func saveEntityWayBillMapping(stub shim.ChaincodeStubInterface, createEntityWayB
 
 	dataToStore, _ := json.Marshal(entityWayBillMapping)
 
-	err := DumpData(stub, createEntityWayBillMappingRequest.EntityName+ENTITY_WAYBILL_MAPPING_SUFFIX, string(dataToStore))
+	err := DumpData(stub, createEntityWayBillMappingRequest.EntityName+constants.ENTITY_WAYBILL_MAPPING_SUFFIX, string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
 		return nil, err
@@ -71,7 +71,7 @@ func UpdateEntityWayBillMapping(stub shim.ChaincodeStubInterface, entityName str
 		entityWayBillMappingRequest.WayBillsNumber = append(entityWayBillMapping.WayBillsNumber, entityWayBillMappingDetail)
 		fmt.Println("Updated Entity", entityWayBillMappingRequest)
 		dataToStore, _ := json.Marshal(entityWayBillMappingRequest)
-		err := DumpData(stub, entityName+ENTITY_WAYBILL_MAPPING_SUFFIX, string(dataToStore))
+		err := DumpData(stub, entityName+constants.ENTITY_WAYBILL_MAPPING_SUFFIX, string(dataToStore))
 		if err != nil {
 			fmt.Println("Could not save Entity WayBill Mapping to ledger", err)
 			return nil, err
@@ -106,7 +106,7 @@ func GetEntityWayBillMapping(stub shim.ChaincodeStubInterface, args []string) ([
 func fetchEntityWayBillMappingData(stub shim.ChaincodeStubInterface, entityName string) (EntityWayBillMapping, error) {
 	var entityWayBillMapping EntityWayBillMapping
 
-	indexByte, err := stub.GetState(entityName + ENTITY_WAYBILL_MAPPING_SUFFIX)
+	indexByte, err := stub.GetState(entityName + constants.ENTITY_WAYBILL_MAPPING_SUFFIX)
 	if err != nil {
 		fmt.Println("Could not retrive Entity WayBill Mapping ", err)
 		return entityWayBillMapping, err
