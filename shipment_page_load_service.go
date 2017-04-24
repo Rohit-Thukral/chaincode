@@ -135,7 +135,17 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 	assetModelDetails, err = thisClass.fetchAssetModelName(stub)
 	fmt.Println("consignerDetails.Id == " + consignerDetails.ConsignerId)
 	if consignerDetails.ConsignerId != "" {
-		consigneeArr, carrier, waybillIds, err = thisClass.fetchCorrespondingConsignees(stub, consignerDetails)
+		consigneeArr, carrier, err = thisClass.fetchCorrespondingConsignees(stub, consignerDetails)
+
+		var waybillIds EntityWayBillMapping
+		var werr error
+		if tmpEntity.EntityType == "Warehouse" {
+			waybillIds, werr = fetchEntityWayBillMappingData(stub, tmpEntity.EntityId)
+			fmt.Println("After getting entitywaybill mapping-----", waybillIds)
+			if werr != nil {
+				fmt.Println("Error while fetching waybill id based on entity ", werr)
+			}
+		}
 		response.CallingEntityName = request.CallingEntityName
 
 		response.ConsignerId = consignerDetails.ConsignerId
@@ -162,7 +172,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 
 }
 
-func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.ChaincodeStubInterface, consignerDetails ConsignerShipmentPageLoadResponse) ([]ConsigneeShipmentPageLoadResponse, []CarrierResponse, EntityWayBillMapping, error) {
+func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.ChaincodeStubInterface, consignerDetails ConsignerShipmentPageLoadResponse) ([]ConsigneeShipmentPageLoadResponse, []CarrierResponse, error) {
 	fmt.Println("Entering fetchCorrespondingConsignees consignerDetails : ")
 	fmt.Println("===consignerDetails===", consignerDetails)
 
@@ -173,7 +183,6 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 
 	var carrier []CarrierResponse
 	var allEntities AllEntities
-	var waybillIds EntityWayBillMapping
 
 	allEntities, err = thisClass.fetchAllEntities(stub)
 	if err == nil {
@@ -201,13 +210,7 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 					tmpConsigneeResponse.ConsigneeCountry = tmpEntity.EntityCountry
 					tmpConsigneeResponse.ConsigneeRegNumber = tmpEntity.EntityRegNumber
 					consigneeArr = append(consigneeArr, tmpConsigneeResponse)
-					var werr error
-					if consignerDetails.ConsignerType == "Warehouse" {
-						waybillIds, werr = fetchEntityWayBillMappingData(stub, tmpEntity.EntityId)
-						if werr != nil {
-							fmt.Println("Error while fetching waybill id based on entity ", werr)
-						}
-					}
+
 				}
 
 				if consignerDetails.ConsignerCountry == tmpEntity.EntityCountry && tmpEntity.EntityType == "ThirdPartyLogistic" {
