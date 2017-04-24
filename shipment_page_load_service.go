@@ -137,7 +137,6 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 	if consignerDetails.ConsignerId != "" {
 		consigneeArr, carrier, err = thisClass.fetchCorrespondingConsignees(stub, consignerDetails)
 
-		var waybillIds EntityWayBillMapping
 		var werr error
 		if tmpEntity.EntityType == "Warehouse" {
 			waybillIds, werr = fetchEntityWayBillMappingData(stub, tmpEntity.EntityId)
