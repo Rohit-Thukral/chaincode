@@ -55,6 +55,11 @@ func CreateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	}
 	saveResult, errMsg := saveShipmentWayBill(stub, dcshipmentDetails)
 
+	var waybillShipmentMapping WayBillShipmentMapping
+	waybillShipmentMapping.DCShipmentNumber = dcshipmentDetails.ShipmentNumber
+	waybillShipmentMapping.DCWayBillsNumber = dcshipmentDetails.WayBillNumber
+	saveWayBillShipmentMapping(stub, waybillShipmentMapping)
+	fmt.Println("Successfully saved waybill shipment mapping details")
 	return saveResult, errMsg
 
 }
