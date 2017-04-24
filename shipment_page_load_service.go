@@ -224,7 +224,7 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 		}
 	} else {
 		fmt.Println("Error while fetching workflow data", err)
-		return consigneeArr, carrier, waybillIds, err
+		return consigneeArr, carrier, err
 	}
 
 	fmt.Println("consigneeArr : ======================")
@@ -235,7 +235,7 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 	fmt.Println("carrier : ======================")
 	fmt.Println("Exiting fetchCorrespondingConsignees ")
 
-	return consigneeArr, carrier, waybillIds, nil
+	return consigneeArr, carrier, nil
 
 }
 
