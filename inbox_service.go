@@ -81,7 +81,7 @@ func (t *InboxService) createEWWayBillArray(stub shim.ChaincodeStubInterface, tm
 		var tmpShipmentWayBill EWWayBill
 		tmpShipmentWayBill, err = fetchEWWayBillData(stub, allEWWayBillIndex.AllWayBillNumber[i])
 		fmt.Println("tmpShipmentWayBill---------->", tmpShipmentWayBill)
-		if err == nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, "", tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian,"") == "true" {
+		if err == nil && t.checkInboxCondition(tmpEntity.EntityId, tmpEntity.EntityType, inboxName, tmpShipmentWayBill.Status, tmpShipmentWayBill.Consigner, tmpShipmentWayBill.Consignee, "", tmpShipmentWayBill.CustodianHistory, tmpShipmentWayBill.Custodian, "") == "true" {
 			shipmentWayBillArray = append(shipmentWayBillArray, tmpShipmentWayBill)
 		}
 
@@ -121,7 +121,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 	}
 
 	if entityType == "DC" {
-		if inboxName == "Scheduled" && (status == "WaybillCreated" ||  || status == "DCWaybillCreated") && consigneeName == entityId {
+		if inboxName == "Scheduled" && (status == "WaybillCreated" || status == "DCWaybillCreated") && consigneeName == entityId {
 			return "true"
 		}
 		if inboxName == "Created" && status == "DCShipmentCreated" && consignerName == entityId {
