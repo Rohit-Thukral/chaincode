@@ -47,7 +47,7 @@ type ShipmentPageLoadResponse struct {
 	Consignee          []ConsigneeShipmentPageLoadResponse `json:"consignee"`
 	Carrier            []CarrierResponse                   `json:"carrier"`
 	ModelNames         []string                            `json:"modelNames"`
-	WaybillIds         EntityWayBillMapping                `json:"waybillIds"`
+	WaybillIds         []EntityWayBillMappingDetail        `json:"waybillIds"`
 }
 
 type CountryEntityMappingRequest struct {
@@ -119,6 +119,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 	var response ShipmentPageLoadResponse
 	var assetModelDetails AssetModelDetails
 	var waybillIds EntityWayBillMapping
+	var entityWayBillMappingDetail []EntityWayBillMappingDetail
 	request := thisClass.parseShipmentPageLoadRequest(args[0])
 
 	tmpEntity, err = thisClass.fetchEntities(stub, request.CallingEntityName)
@@ -144,6 +145,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 			if werr != nil {
 				fmt.Println("Error while fetching waybill id based on entity ", werr)
 			}
+			entityWayBillMappingDetail = waybillIds.WayBillsNumber
 		}
 		response.CallingEntityName = request.CallingEntityName
 
@@ -156,7 +158,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 
 		response.Consignee = consigneeArr
 		response.Carrier = carrier
-		response.WaybillIds = waybillIds
+		response.WaybillIds = entityWayBillMappingDetail
 		response.ModelNames = assetModelDetails.ModelNames
 	}
 
