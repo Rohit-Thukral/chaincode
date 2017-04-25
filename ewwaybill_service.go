@@ -137,7 +137,7 @@ func saveEWWayBill(stub shim.ChaincodeStubInterface, createEWWayBillRequest EWWa
 	ewWayBill.VesselNumber = createEWWayBillRequest.VesselNumber
 	ewWayBill.ContainerNumber = createEWWayBillRequest.ContainerNumber
 	ewWayBill.ServiceType = createEWWayBillRequest.ServiceType
-	//ewWayBill.SupportiveDocumentsList = createEWWayBillRequest.SupportiveDocumentsList
+	ewWayBill.SupportiveDocuments = createEWWayBillRequest.SupportiveDocuments
 	ewWayBill.EwWayBillCreationDate = createEWWayBillRequest.EwWayBillCreationDate
 	ewWayBill.EwWayBillCreatedBy = createEWWayBillRequest.EwWayBillCreatedBy
 	ewWayBill.EwWayBillModifiedDate = createEWWayBillRequest.EwWayBillModifiedDate

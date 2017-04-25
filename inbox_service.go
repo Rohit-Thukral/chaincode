@@ -130,7 +130,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 		if inboxName == "InTransit" && status == "DCWaybillCreated" && (consignerName == entityId || consigneeName == entityId) {
 			return "true"
 		}
-		if inboxName == "Delivered" && ((status == "DCWaybillDelivered" && consignerName == entityId) || (status == "WaybillDelivered" && consigneeName == entityId)) {
+		if inboxName == "Delivered" && ((status == "DCWaybillDelivered" && (consignerName == entityId || consigneeName == entityId)) || (status == "WaybillDelivered" && consigneeName == entityId)) {
 			return "true"
 		}
 		if inboxName == "Cancelled" && status == "DCShipmentCancelled" && consignerName == entityId {
@@ -146,7 +146,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 			return "true"
 		}
 
-		if inboxName == "InTransit" && (status == "EWWaybillAtCargo" || status == "EWWaybillAtVessel" || status == "EWWaybillAtOCCargo") && (consignerName == entityId || consigneeName == entityId) {
+		if inboxName == "InTransit" && (status == "EWWaybillAtCargo" || status == "EWWaybillAtVessel" || status == "EWWaybillAtOCCargo") && (consignerName == entityId) {
 			return "true"
 		}
 		if inboxName == "Delivered" && ((status == "EWWaybillDelivered" && consignerName == entityId) || (status == "EWWaybillDelivered" && consigneeName == entityId) || (status == "DCWaybillDelivered" && entityId == custodian)) {
@@ -162,7 +162,7 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 			return "true"
 		}
 
-		if inboxName == "Delivered" && (status == "EWWaybillAtVessel" || status == "EWWaybillAtOCCargo" || status == "EWWaybillDelivered") && util.hasCustodian(custodianHistory, entityId) {
+		if inboxName == "Delivered" && (status == "EWWaybillAtVessel" || status == "EWWaybillDelivered") && util.hasCustodian(custodianHistory, entityId) {
 			return "true"
 		}
 	}
