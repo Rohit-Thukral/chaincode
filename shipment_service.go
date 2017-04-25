@@ -45,7 +45,7 @@ func UpdateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 
 	wayBilldata, _ := fetchShipmentWayBillData(stub, shipmentRequest.ShipmentNumber)
-	shipmentRequest.CustodianHistory = wayBilldata.CustodianHistory
+	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, wayBilldata)
 	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
 	return saveShipmentWayBill(stub, shipmentRequest)
 }
