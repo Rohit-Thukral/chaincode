@@ -41,6 +41,15 @@ type Shipment struct {
 	CreatedTimeStamp      string           `json:"createdTimeStamp"`
 	UpdatedTimeStamp      string           `json:"updatedTimeStamp"`
 }
+
+
+type TrailItems struct {
+	TrailName			string           `json:"trailName"`
+	TimeStamp			string           `json:"timeStamp"`
+	TrailAddress		string           `json:"trailAddress"`
+	TrailLat			float64           `json:"trailLat"`
+	TrailLng			float64           `json:"trailLng"`
+}
 /************** Asset Search Service Starts ************************/
 
 type SearchAssetRequest struct {
@@ -54,15 +63,57 @@ type SearchAssetData struct {
 	AssetType  					string     	`json:"assetType"`
 	CartonSerialNumber       	string     	`json:"cartonSerialNumber"`
 	PalletSerialNumber       	string     	`json:"palletSerialNumber"`
+	ShipmentNumber       		string     	`json:"shipmentNumber"`
 	Custodian             		string   	`json:"custodian"`
-	custodianTime   			string   	`json:"custodianTime"`
+	CustodianTime   			string   	`json:"custodianTime"`
 	Status             	  		string   	`json:"status"`
+
+	SenderName					string   	`json:"senderName"`
+	SenderAddress				string   	`json:"senderAddress"`
+	ReceiverName				string   	`json:"receiverName"`
+	ReceiverAddress				string   	`json:"receiverAddress"`
+
+	ServiceType					string   	`json:"serviceType"`
+	NoOfItems					string   	`json:"noOfItems"`
+	TransportMode				string   	`json:"transportMode"`
+
+	PalletsArr					[]string   	`json:"palletsArr"`
+
+	History						[]TrailItems	`json:"history"`
 }
 
 type SearchAssetResponse struct {
 	Data 						[]SearchAssetData		`json:"data"`
 	ErrCode        				string     	`json:"errCode"`
 	ErrMessage     				string     	`json:"errMessage"`
+}
+
+func prepareHistroyTrail(stub shim.ChaincodeStubInterface, histroy []CustodianHistoryDetail) ([]TrailItems) {
+	var trailHistroyArr []TrailItems
+	var thisClass ShipmentPageLoadService
+	var err error
+
+	lenOfArray := len(histroy)
+
+	fmt.Println("===lenOfArray all histroy===", lenOfArray)
+
+	for i := 0; i < lenOfArray; i++ {
+		var tmpEntity Entity
+		var trailHistroy TrailItems
+		tmpEntity, err = thisClass.fetchEntities(stub, histroy[i].CustodianName)
+		if err != nil {
+			fmt.Println("Could not fetch Entities", err)
+		}
+		trailHistroy.TrailName = tmpEntity.EntityName
+		trailHistroy.TimeStamp = histroy[i].CustodianTime
+		trailHistroy.TrailAddress = tmpEntity.EntityAddress
+		trailHistroy.TrailLat = tmpEntity.Latitude
+		trailHistroy.TrailLng = tmpEntity.Longitude
+
+		trailHistroyArr = append(trailHistroyArr, trailHistroy)
+	}
+
+	return trailHistroyArr
 }
 
 func retrieveShipment(stub shim.ChaincodeStubInterface, shipmentId string) (Shipment, error) {
@@ -94,41 +145,109 @@ func PrepareSearchAssetResponse(stub shim.ChaincodeStubInterface, asset AssetDet
 	respData.CartonSerialNumber = asset.CartonSerialNumber
 	respData.PalletSerialNumber = asset.PalletSerialNumber
 	
-	tmpShipment, err = fetchShipmentWayBillData(stub, asset.MshipmentNumber)
-	
-	if err != nil {
-		resp.ErrCode = "ERR_DATA"
-		resp.ErrMessage = "Unable to get Shipment MshipmentNumber"
-		fmt.Println("Error while retrieveing the Shipment Details", err)
-		return nil, err
-	} else {
-		respData.Custodian = tmpShipment.Custodian;
-		respData.custodianTime = tmpShipment.WayBillModifiedDate;
-		respData.Status = tmpShipment.Status;
-		respDataArr = append(respDataArr, respData)
+	if(asset.MshipmentNumber != "") {
+		tmpShipment, err = fetchShipmentWayBillData(stub, asset.MshipmentNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment MshipmentNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData.ShipmentNumber = asset.MshipmentNumber;
+			respData.Custodian = tmpShipment.Custodian;
+			respData.CustodianTime = tmpShipment.WayBillModifiedDate;
+			respData.Status = tmpShipment.Status;
+
+			respData.SenderName = tmpShipment.Consigner;
+			respData.SenderAddress = tmpShipment.AddressOfConsigner;
+			respData.ReceiverName = tmpShipment.Consignee;
+			respData.ReceiverAddress = tmpShipment.AddressOfConsignee;
+
+			respData.ServiceType = tmpShipment.ServiceType;
+			respData.NoOfItems = tmpShipment.AssetsQuantity;
+			respData.TransportMode = tmpShipment.VesselType;
+			respData.PalletsArr = tmpShipment.PalletsSerialNumber;
+
+
+			respData.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
+			respDataArr = append(respDataArr, respData)
+		}
 	}
 //-----------------------------------------------------------------------//
-	var respData2 SearchAssetData
+	/*var respData2 SearchAssetData
 	respData2.AssetSerialNo = asset.AssetSerialNumber
 	respData2.AssetModel = asset.AssetModel
 	respData2.AssetType = asset.AssetType
 	respData2.CartonSerialNumber = asset.CartonSerialNumber
 	respData2.PalletSerialNumber = asset.PalletSerialNumber
+	var tmpEWWayBill EWWayBill
+	if(asset.EwWayBillNumber != "") {
+		tmpEWWayBill, err = fetchEWWayBillData(stub, asset.EwWayBillNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData2.ShipmentNumber = asset.EwWayBillNumber;
+			respData2.Custodian = tmpEWWayBill.Custodian;
+			respData2.CustodianTime = tmpEWWayBill.EwWayBillModifiedDate;
+			respData2.Status = tmpEWWayBill.Status;
+
+			respData2.SenderName = tmpEWWayBill.Consigner;
+			respData2.SenderAddress = tmpEWWayBill.AddressOfConsigner;
+			respData2.ReceiverName = tmpEWWayBill.Consignee;
+			respData2.ReceiverAddress = tmpEWWayBill.AddressOfConsignee;
+
+			respData2.ServiceType = tmpEWWayBill.ServiceType;
+			respData2.NoOfItems = "-";
+			respData2.TransportMode = tmpEWWayBill.VesselType;
+			respData2.PalletsArr = nil;
+
+
+			respData2.History = prepareHistroyTrail(stub, tmpEWWayBill.CustodianHistory)
+			respDataArr = append(respDataArr, respData2)
+		}
+	}*/
+//-----------------------------------------------------------------------//
+	var respData3 SearchAssetData
+	respData3.AssetSerialNo = asset.AssetSerialNumber
+	respData3.AssetModel = asset.AssetModel
+	respData3.AssetType = asset.AssetType
+	respData3.CartonSerialNumber = asset.CartonSerialNumber
+	respData3.PalletSerialNumber = asset.PalletSerialNumber
 	
-	tmpShipment, err = fetchShipmentWayBillData(stub, asset.DcWayBillNumber)
-	
-	if err != nil {
-		resp.ErrCode = "ERR_DATA"
-		resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
-		fmt.Println("Error while retrieveing the Shipment Details", err)
-		return nil, err
-	} else {
-		respData2.Custodian = tmpShipment.Custodian;
-		respData2.custodianTime = tmpShipment.WayBillModifiedDate;
-		respData2.Status = tmpShipment.Status;
-		respDataArr = append(respDataArr, respData2)
+	if(asset.DcShipmentNumber != "") {
+		tmpShipment, err = fetchShipmentWayBillData(stub, asset.DcShipmentNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData3.ShipmentNumber = asset.DcShipmentNumber;
+			respData3.Custodian = tmpShipment.Custodian;
+			respData3.CustodianTime = tmpShipment.WayBillModifiedDate;
+			respData3.Status = tmpShipment.Status;
+
+			respData3.SenderName = tmpShipment.Consigner;
+			respData3.SenderAddress = tmpShipment.AddressOfConsigner;
+			respData3.ReceiverName = tmpShipment.Consignee;
+			respData3.ReceiverAddress = tmpShipment.AddressOfConsignee;
+
+			respData3.ServiceType = tmpShipment.ServiceType;
+			respData3.NoOfItems = tmpShipment.AssetsQuantity;
+			respData3.TransportMode = tmpShipment.VesselType;
+			respData3.PalletsArr = tmpShipment.PalletsSerialNumber;
+
+
+			respData3.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
+			respDataArr = append(respDataArr, respData3)
+		}
 	}
-	
 	resp.Data = respDataArr
 	return json.Marshal(resp)
 
@@ -177,72 +296,167 @@ func SearchAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 
 type SearchCartonRequest struct {
 	CallingEntityName string `json:"callingEntityName"`
-	CartonId          string `json:"cartonId"`
+	CartonId           string `json:"cartonId"`
+}
+
+type SearchCartonData struct {
+	CartonSerialNumber       	string     	`json:"cartonSerialNumber"`
+	PalletSerialNumber       	string     	`json:"palletSerialNumber"`
+	ShipmentNumber       		string     	`json:"shipmentNumber"`
+	Custodian             		string   	`json:"custodian"`
+	CustodianTime   			string   	`json:"custodianTime"`
+	Status             	  		string   	`json:"status"`
+
+	SenderName					string   	`json:"senderName"`
+	SenderAddress				string   	`json:"senderAddress"`
+	ReceiverName				string   	`json:"receiverName"`
+	ReceiverAddress				string   	`json:"receiverAddress"`
+
+	ServiceType					string   	`json:"serviceType"`
+	NoOfItems					string   	`json:"noOfItems"`
+	TransportMode				string   	`json:"transportMode"`
+
+	PalletsArr					[]string   	`json:"palletsArr"`
+
+	History						[]TrailItems	`json:"history"`
 }
 
 type SearchCartonResponse struct {
-	CartonId       string     `json:"cartonId"`
-	PalletId       string     `json:"palletId"`
-	ShipmentDetail []Shipment `json:"shipmentDetail"`
-	ErrCode        string     `json:"errCode"`
-	ErrMessage     string     `json:"errMessage"`
+	Data 						[]SearchCartonData		`json:"data"`
+	ErrCode        				string     	`json:"errCode"`
+	ErrMessage     				string     	`json:"errMessage"`
+}
+
+func PrepareSearchCartonResponse(stub shim.ChaincodeStubInterface, carton CartonDetails) ([]byte, error) {
+	fmt.Println("PrepareSearchCartonResponse ", carton)
+	var resp SearchCartonResponse
+	var tmpShipment ShipmentWayBill
+	var err error
+	var respDataArr []SearchCartonData
+	
+
+	
+	var respData SearchCartonData
+	respData.CartonSerialNumber = carton.CartonSerialNumber
+	respData.PalletSerialNumber = carton.PalletSerialNumber
+	
+	if(carton.MshipmentNumber != "") {
+		tmpShipment, err = fetchShipmentWayBillData(stub, carton.MshipmentNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment MshipmentNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData.ShipmentNumber = carton.MshipmentNumber;
+			respData.Custodian = tmpShipment.Custodian;
+			respData.CustodianTime = tmpShipment.WayBillModifiedDate;
+			respData.Status = tmpShipment.Status;
+
+			respData.SenderName = tmpShipment.Consigner;
+			respData.SenderAddress = tmpShipment.AddressOfConsigner;
+			respData.ReceiverName = tmpShipment.Consignee;
+			respData.ReceiverAddress = tmpShipment.AddressOfConsignee;
+
+			respData.ServiceType = tmpShipment.ServiceType;
+			respData.NoOfItems = tmpShipment.AssetsQuantity;
+			respData.TransportMode = tmpShipment.VesselType;
+			respData.PalletsArr = tmpShipment.PalletsSerialNumber;
+
+
+			respData.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
+			respDataArr = append(respDataArr, respData)
+		}
+	}
+//-----------------------------------------------------------------------//
+	/*var respData2 SearchCartonData
+	respData2.CartonSerialNumber = carton.CartonSerialNumber
+	respData2.PalletSerialNumber = carton.PalletSerialNumber
+	var tmpEWWayBill EWWayBill
+	if(carton.EwWayBillNumber != "") {
+		tmpEWWayBill, err = fetchShipmentWayBillData(stub, carton.EwWayBillNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData2.ShipmentNumber = carton.DcWayBillNumber;
+			respData2.Custodian = tmpEWWayBill.Custodian;
+			respData2.CustodianTime = tmpEWWayBill.EwWayBillModifiedDate;
+			respData2.Status = tmpEWWayBill.Status;
+
+			respData2.SenderName = tmpEWWayBill.Consigner;
+			respData2.SenderAddress = tmpEWWayBill.AddressOfConsigner;
+			respData2.ReceiverName = tmpEWWayBill.Consignee;
+			respData2.ReceiverAddress = tmpEWWayBill.AddressOfConsignee;
+
+			respData2.ServiceType = tmpEWWayBill.ServiceType;
+			respData2.NoOfItems = '-';
+			respData2.TransportMode = tmpEWWayBill.VesselType;
+			respData2.PalletsArr = nil;
+
+
+			respData2.History = prepareHistroyTrail(stub, tmpEWWayBill.CustodianHistory)
+			respDataArr = append(respDataArr, respData2)
+		}
+	}*/
+//-----------------------------------------------------------------------//
+	var respData3 SearchCartonData
+	respData3.CartonSerialNumber = carton.CartonSerialNumber
+	respData3.PalletSerialNumber = carton.PalletSerialNumber
+	
+	if(carton.DcShipmentNumber != "") {
+		tmpShipment, err = fetchShipmentWayBillData(stub, carton.DcShipmentNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData3.ShipmentNumber = carton.DcShipmentNumber;
+			respData3.Custodian = tmpShipment.Custodian;
+			respData3.CustodianTime = tmpShipment.WayBillModifiedDate;
+			respData3.Status = tmpShipment.Status;
+
+			respData3.SenderName = tmpShipment.Consigner;
+			respData3.SenderAddress = tmpShipment.AddressOfConsigner;
+			respData3.ReceiverName = tmpShipment.Consignee;
+			respData3.ReceiverAddress = tmpShipment.AddressOfConsignee;
+
+			respData3.ServiceType = tmpShipment.ServiceType;
+			respData3.NoOfItems = tmpShipment.AssetsQuantity;
+			respData3.TransportMode = tmpShipment.VesselType;
+			respData3.PalletsArr = tmpShipment.PalletsSerialNumber;
+
+
+			respData3.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
+			respDataArr = append(respDataArr, respData3)
+		}
+	}
+	
+	resp.Data = respDataArr
+	return json.Marshal(resp)
+
 }
 
 func parseSearchCartonRequest(requestParam string) (SearchCartonRequest, error) {
 	var request SearchCartonRequest
 
 	if marshErr := json.Unmarshal([]byte(requestParam), &request); marshErr != nil {
-		fmt.Println("Could not Unmarshal Asset", marshErr)
+		fmt.Println("Could not Unmarshal Carton", marshErr)
 		return request, marshErr
 	}
 	return request, nil
 
 }
 
-func parseCarton(stub shim.ChaincodeStubInterface, cartonId string) (Carton, error) {
-	var carton Carton
-
-	cartonBytes, err := stub.GetState(cartonId)
-	if err != nil {
-		return carton, err
-	} else {
-		if marshErr := json.Unmarshal(cartonBytes, &carton); marshErr != nil {
-			fmt.Println("Could not Unmarshal Asset", marshErr)
-			return carton, marshErr
-		}
-		return carton, nil
-	}
-
-}
-
-func PrepareSearchCartontResponse(stub shim.ChaincodeStubInterface, carton Carton) ([]byte, error) {
-	var resp SearchCartonResponse
-	var shipmentArr []Shipment
-	var tmpShipment Shipment
-	var err error
-
-	resp.CartonId = carton.CartonId
-	resp.PalletId = carton.PalletId
-
-	lenOfArray := len(carton.ShipmentIds)
-
-	for i := 0; i < lenOfArray; i++ {
-		tmpShipment, err = retrieveShipment(stub, carton.ShipmentIds[i])
-		if err != nil {
-			fmt.Println("Error while retrieveing the Shipment Details", err)
-			return nil, err
-		}
-		shipmentArr = append(shipmentArr, tmpShipment)
-	}
-
-	resp.ShipmentDetail = shipmentArr
-	return json.Marshal(resp)
-
-}
-
 func SearchCarton(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering SearchCarton " + args[0])
-	var carton Carton
+	var carton CartonDetails
 	var err error
 	var request SearchCartonRequest
 	var resp SearchCartonResponse
@@ -254,7 +468,7 @@ func SearchCarton(stub shim.ChaincodeStubInterface, args []string) ([]byte, erro
 		return json.Marshal(resp)
 	}
 
-	carton, err = parseCarton(stub, request.CartonId)
+	carton, err = fetchCartonDetails(stub, request.CartonId)
 
 	if err != nil {
 		resp.ErrCode = NODATA_ERROR_CODE
@@ -262,7 +476,7 @@ func SearchCarton(stub shim.ChaincodeStubInterface, args []string) ([]byte, erro
 		return json.Marshal(resp)
 	}
 
-	return PrepareSearchCartontResponse(stub, carton)
+	return PrepareSearchCartonResponse(stub, carton)
 
 }
 
@@ -270,16 +484,152 @@ func SearchCarton(stub shim.ChaincodeStubInterface, args []string) ([]byte, erro
 
 /************** Pallet Search Service Starts ************************/
 
+
 type SearchPalletRequest struct {
 	CallingEntityName string `json:"callingEntityName"`
-	PalletId          string `json:"palletId"`
+	PalletId           string `json:"palletId"`
+}
+
+type SearchPalletData struct {
+	PalletSerialNumber       	string     	`json:"palletSerialNumber"`
+	ShipmentNumber       		string     	`json:"shipmentNumber"`
+	Custodian             		string   	`json:"custodian"`
+	CustodianTime   			string   	`json:"custodianTime"`
+	Status             	  		string   	`json:"status"`
+
+	SenderName					string   	`json:"senderName"`
+	SenderAddress				string   	`json:"senderAddress"`
+	ReceiverName				string   	`json:"receiverName"`
+	ReceiverAddress				string   	`json:"receiverAddress"`
+
+	ServiceType					string   	`json:"serviceType"`
+	NoOfItems					string   	`json:"noOfItems"`
+	TransportMode				string   	`json:"transportMode"`
+
+	PalletsArr					[]string   	`json:"palletsArr"`
+
+	History						[]TrailItems	`json:"history"`
 }
 
 type SearchPalletResponse struct {
-	PalletId       string     `json:"palletId"`
-	ShipmentDetail []Shipment `json:"shipmentDetail"`
-	ErrCode        string     `json:"errCode"`
-	ErrMessage     string     `json:"errMessage"`
+	Data 						[]SearchPalletData		`json:"data"`
+	ErrCode        				string     	`json:"errCode"`
+	ErrMessage     				string     	`json:"errMessage"`
+}
+
+func PrepareSearchPalletResponse(stub shim.ChaincodeStubInterface, pallet PalletDetails) ([]byte, error) {
+	fmt.Println("PrepareSearchPalletResponse ", pallet)
+	var resp SearchPalletResponse
+	var tmpShipment ShipmentWayBill
+	var err error
+	var respDataArr []SearchPalletData
+	
+
+	
+	var respData SearchPalletData
+	respData.PalletSerialNumber = pallet.PalletSerialNumber
+
+	if(pallet.MshipmentNumber != "") {
+	tmpShipment, err = fetchShipmentWayBillData(stub, pallet.MshipmentNumber)
+	
+	
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment MshipmentNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData.ShipmentNumber = pallet.MshipmentNumber;
+			respData.Custodian = tmpShipment.Custodian;
+			respData.CustodianTime = tmpShipment.WayBillModifiedDate;
+			respData.Status = tmpShipment.Status;
+
+			respData.SenderName = tmpShipment.Consigner;
+			respData.SenderAddress = tmpShipment.AddressOfConsigner;
+			respData.ReceiverName = tmpShipment.Consignee;
+			respData.ReceiverAddress = tmpShipment.AddressOfConsignee;
+
+			respData.ServiceType = tmpShipment.ServiceType;
+			respData.NoOfItems = tmpShipment.AssetsQuantity;
+			respData.TransportMode = tmpShipment.VesselType;
+			respData.PalletsArr = tmpShipment.PalletsSerialNumber;
+
+
+			respData.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
+			respDataArr = append(respDataArr, respData)
+		}
+	}
+//-----------------------------------------------------------------------//
+	/*var respData2 SearchPalletData
+	respData2.PalletSerialNumber = pallet.PalletSerialNumber
+	var tmpEWWayBill EWWayBill
+
+	if(pallet.EwWayBillNumber != "") {
+		tmpEWWayBill, err = fetchShipmentWayBillData(stub, pallet.EwWayBillNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData2.ShipmentNumber = pallet.EwWayBillNumber;
+			respData2.Custodian = tmpEWWayBill.Custodian;
+			respData2.CustodianTime = tmpEWWayBill.EwWayBillModifiedDate;
+			respData2.Status = tmpEWWayBill.Status;
+
+			respData2.SenderName = tmpEWWayBill.Consigner;
+			respData2.SenderAddress = tmpEWWayBill.AddressOfConsigner;
+			respData2.ReceiverName = tmpEWWayBill.Consignee;
+			respData2.ReceiverAddress = tmpEWWayBill.AddressOfConsignee;
+
+			respData2.ServiceType = tmpEWWayBill.ServiceType;
+			respData2.NoOfItems = '-';
+			respData2.TransportMode = tmpEWWayBill.VesselType;
+			respData2.PalletsArr = nil;
+
+
+			respData2.History = prepareHistroyTrail(stub, tmpEWWayBill.CustodianHistory)
+			respDataArr = append(respDataArr, respData2)
+		}
+	}*/
+//-----------------------------------------------------------------------//
+	var respData3 SearchPalletData
+	respData3.PalletSerialNumber = pallet.PalletSerialNumber
+	
+	if(pallet.DcShipmentNumber != "") {
+		tmpShipment, err = fetchShipmentWayBillData(stub, pallet.DcShipmentNumber)
+		
+		if err != nil {
+			resp.ErrCode = "ERR_DATA"
+			resp.ErrMessage = "Unable to get Shipment DcWayBillNumber"
+			fmt.Println("Error while retrieveing the Shipment Details", err)
+			return nil, err
+		} else {
+			respData3.ShipmentNumber = pallet.DcShipmentNumber;
+			respData3.Custodian = tmpShipment.Custodian;
+			respData3.CustodianTime = tmpShipment.WayBillModifiedDate;
+			respData3.Status = tmpShipment.Status;
+
+			respData3.SenderName = tmpShipment.Consigner;
+			respData3.SenderAddress = tmpShipment.AddressOfConsigner;
+			respData3.ReceiverName = tmpShipment.Consignee;
+			respData3.ReceiverAddress = tmpShipment.AddressOfConsignee;
+
+			respData3.ServiceType = tmpShipment.ServiceType;
+			respData3.NoOfItems = tmpShipment.AssetsQuantity;
+			respData3.TransportMode = tmpShipment.VesselType;
+			respData3.PalletsArr = tmpShipment.PalletsSerialNumber;
+
+
+			respData3.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
+			respDataArr = append(respDataArr, respData3)
+		}
+	}
+	
+	resp.Data = respDataArr
+	return json.Marshal(resp)
+
 }
 
 func parseSearchPalletRequest(requestParam string) (SearchPalletRequest, error) {
@@ -293,50 +643,9 @@ func parseSearchPalletRequest(requestParam string) (SearchPalletRequest, error) 
 
 }
 
-func parsePallet(stub shim.ChaincodeStubInterface, palletId string) (Pallet, error) {
-
-	var pallet Pallet
-
-	palletBytes, err := stub.GetState(palletId)
-	if err != nil {
-		return pallet, err
-	} else {
-		if marshErr := json.Unmarshal(palletBytes, &pallet); marshErr != nil {
-			fmt.Println("Could not Unmarshal Asset", marshErr)
-			return pallet, marshErr
-		}
-		return pallet, nil
-	}
-
-}
-
-func PrepareSearchPalletResponse(stub shim.ChaincodeStubInterface, pallet Pallet) ([]byte, error) {
-	var resp SearchPalletResponse
-	var shipmentArr []Shipment
-	var tmpShipment Shipment
-	var err error
-
-	resp.PalletId = pallet.PalletId
-
-	lenOfArray := len(pallet.ShipmentIds)
-
-	for i := 0; i < lenOfArray; i++ {
-		tmpShipment, err = retrieveShipment(stub, pallet.ShipmentIds[i])
-		if err != nil {
-			fmt.Println("Error while retrieveing the Shipment Details", err)
-			return nil, err
-		}
-		shipmentArr = append(shipmentArr, tmpShipment)
-	}
-
-	resp.ShipmentDetail = shipmentArr
-	return json.Marshal(resp)
-
-}
-
 func SearchPallet(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering SearchPallet " + args[0])
-	var pallet Pallet
+	var pallet PalletDetails
 	var err error
 	var request SearchPalletRequest
 	var resp SearchPalletResponse
@@ -348,7 +657,7 @@ func SearchPallet(stub shim.ChaincodeStubInterface, args []string) ([]byte, erro
 		return json.Marshal(resp)
 	}
 
-	pallet, err = parsePallet(stub, request.PalletId)
+	pallet, err = fetchPalletDetails(stub, request.PalletId)
 
 	if err != nil {
 		resp.ErrCode = NODATA_ERROR_CODE
