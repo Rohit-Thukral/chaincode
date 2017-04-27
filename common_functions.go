@@ -65,6 +65,7 @@ func saveAssetDetails(stub shim.ChaincodeStubInterface, createAssetDetailsReques
 	assetDetails.MWayBillDate = createAssetDetailsRequest.MWayBillDate
 	assetDetails.DcWayBillDate = createAssetDetailsRequest.DcWayBillDate
 	assetDetails.EwWayBillDate = createAssetDetailsRequest.EwWayBillDate
+	fmt.Println("assetDetails data to update-->", assetDetails)
 
 	dataToStore, _ := json.Marshal(assetDetails)
 
@@ -122,6 +123,7 @@ func saveCartonDetails(stub shim.ChaincodeStubInterface, createCartonDetailsRequ
 	cartonDetails.MWayBillDate = createCartonDetailsRequest.MWayBillDate
 	cartonDetails.DcWayBillDate = createCartonDetailsRequest.DcWayBillDate
 	cartonDetails.EwWayBillDate = createCartonDetailsRequest.EwWayBillDate
+	ftm.Println("cartondetails data update---->", cartonDetails)
 	dataToStore, _ := json.Marshal(cartonDetails)
 
 	err := DumpData(stub, cartonDetails.CartonSerialNumber, string(dataToStore))
@@ -177,6 +179,7 @@ func savePalletDetails(stub shim.ChaincodeStubInterface, createPalletDetailsRequ
 	palletDetails.MWayBillDate = createPalletDetailsRequest.MWayBillDate
 	palletDetails.DcWayBillDate = createPalletDetailsRequest.DcWayBillDate
 	palletDetails.EwWayBillDate = createPalletDetailsRequest.EwWayBillDate
+	fmt.Println("pallet data to update-->", palletDetails)
 	dataToStore, _ := json.Marshal(palletDetails)
 
 	err := DumpData(stub, palletDetails.PalletSerialNumber, string(dataToStore))
@@ -425,9 +428,9 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 		lenOfArray = len(palletData.CartonSerialNumber)
 		fmt.Println("Carton lenOfArray==", lenOfArray)
 
-		for i := 0; i < lenOfArray; i++ {
+		for j := 0; j < lenOfArray; j++ {
 
-			cartonData, err := fetchCartonDetails(stub, palletData.CartonSerialNumber[i])
+			cartonData, err := fetchCartonDetails(stub, palletData.CartonSerialNumber[j])
 			fmt.Println("cartonData===", cartonData)
 
 			if err != nil {
@@ -451,9 +454,9 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 		//Start Loop for Asset Nos
 		lenOfArray = len(palletData.AssetSerialNumber)
 		fmt.Println("assets lenOfArray===", lenOfArray)
-		for i := 0; i < lenOfArray; i++ {
+		for k := 0; k < lenOfArray; k++ {
 
-			assetData, err := fetchAssetDetails(stub, palletData.AssetSerialNumber[i])
+			assetData, err := fetchAssetDetails(stub, palletData.AssetSerialNumber[k])
 			fmt.Println("assetData===", assetData)
 			if err != nil {
 				fmt.Println("Error while retrieveing the Asset Details", err)

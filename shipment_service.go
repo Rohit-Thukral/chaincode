@@ -20,6 +20,7 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Entering Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 	UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
+	fmt.Println("after updatepalletcartonasset............")
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 
