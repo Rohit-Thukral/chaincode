@@ -123,7 +123,7 @@ func saveCartonDetails(stub shim.ChaincodeStubInterface, createCartonDetailsRequ
 	cartonDetails.MWayBillDate = createCartonDetailsRequest.MWayBillDate
 	cartonDetails.DcWayBillDate = createCartonDetailsRequest.DcWayBillDate
 	cartonDetails.EwWayBillDate = createCartonDetailsRequest.EwWayBillDate
-	ftm.Println("cartondetails data update---->", cartonDetails)
+	fmt.Println("cartondetails data update---->", cartonDetails)
 	dataToStore, _ := json.Marshal(cartonDetails)
 
 	err := DumpData(stub, cartonDetails.CartonSerialNumber, string(dataToStore))
