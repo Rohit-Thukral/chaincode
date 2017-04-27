@@ -406,7 +406,7 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 
 		palletData, err := fetchPalletDetails(stub, wayBillRequest.PalletsSerialNumber[i])
 		fmt.Println("palletData===", palletData)
-
+		fmt.Println("iiiiiiiiiii>...............", i)
 		if err != nil {
 			fmt.Println("Error while retrieveing the Pallet Details", err)
 			return nil, err
@@ -432,6 +432,7 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 
 			cartonData, err := fetchCartonDetails(stub, palletData.CartonSerialNumber[j])
 			fmt.Println("cartonData===", cartonData)
+			fmt.Println("jjjjjjjjjjjjjj>...............", j)
 
 			if err != nil {
 				fmt.Println("Error while retrieveing the Carton Details", err)
@@ -450,6 +451,7 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 			fmt.Println("after save carton===")
 
 		} //End Loop for Carton Nos
+		fmt.Println("iiiiiiiiiii after carton save----...............", i)
 
 		//Start Loop for Asset Nos
 		lenOfArray = len(palletData.AssetSerialNumber)
@@ -458,6 +460,8 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 
 			assetData, err := fetchAssetDetails(stub, palletData.AssetSerialNumber[k])
 			fmt.Println("assetData===", assetData)
+			fmt.Println("kkkkkkkkkkkkkkkkkkkkkkkkkk>...............", k)
+
 			if err != nil {
 				fmt.Println("Error while retrieveing the Asset Details", err)
 				return nil, err
@@ -474,7 +478,10 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 			saveAssetDetails(stub, assetData)
 			fmt.Println("after save assets===")
 		} //End Loop for Asset Nos
+		fmt.Println("iiiiiiiiiii>  after asset save-------------...............", i)
+
 	}
+	fmt.Println("after all save--------------->")
 
 	resp := BlockchainResponse{}
 	resp.Err = "000"
