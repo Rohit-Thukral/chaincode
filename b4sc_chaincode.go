@@ -13,7 +13,7 @@ import (
 	"os"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/core/peer"
+	//"github.com/hyperledger/fabric/core/peer"
 )
 
 const NODATA_ERROR_CODE string = "400"
@@ -486,7 +486,9 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 	txID := string(rawTxID)
 	fmt.Println("string Transaction id after putting data============================", txID)
 	//var ledger *ledger.Ledger
-	peer := new(peer.Impl)
+	//ledger
+	//var ledger *ledger.Ledger
+	/*peer := new(peer.Impl)
 	vledger := peer.GetLedger("04303ed5d8290176a258bb6de582177e11ae4742030a8f604043be2c56c0d011499cf485ae0a7006ddf37fc90018e4e8ad5986fd381f6b3960955440b7cf5b5f")
 	block, berr := vledger.GetBlockByTxID(txID)
 
@@ -500,7 +502,7 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 	fmt.Println("Transaction id block marshalblockafter putting data============================", bytes)
 	if merr != nil {
 		return merr
-	}
+	}*/
 	if err != nil {
 		fmt.Println("Could not save the Data", err)
 		return err
