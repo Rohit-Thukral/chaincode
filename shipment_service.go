@@ -33,12 +33,12 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 
 	transactionDet := TransactionDetails{}
 	transactionDet.TransactionId = saveResultRes.TxID
-	transactionDet.status = "Submitted"
+	transactionDet.Status = "Submitted"
 	transactionDet.FromUserId = shipmentRequest.Consigner
 	transactionDet.ToUserId = append(transactionDet.ToUserId, shipmentRequest.Consignee)
 	transactionDet.ToUserId = append(transactionDet.ToUserId, shipmentRequest.Carrier)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionId............", transactionDet.TransactionId)
-	fmt.Println("Start of Transaction Details Store Methods transactionDet.status............", transactionDet.status)
+	fmt.Println("Start of Transaction Details Store Methods transactionDet.status............", transactionDet.Status)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	err := saveTransactionDetails(stub, transactionDet)
@@ -127,12 +127,12 @@ func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBill
 	fmt.Println("shipmentWayBill============ ", shipmentWayBill)
 	fmt.Println("dataToStore============ ", dataToStore)
 
-	err := DumpData(stub, shipmentWayBill.ShipmentNumber, string(dataToStore))
+	txId, err := DumpTxData(stub, shipmentWayBill.ShipmentNumber, string(dataToStore))
 	if err != nil {
 		fmt.Println("Could not save WayBill to ledger", err)
 		return nil, err
 	}
-	txId := stub.getTxID()
+
 	resp := BlockchainResponse{}
 	resp.Err = "000"
 	resp.Message = shipmentWayBill.ShipmentNumber
