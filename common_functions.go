@@ -662,15 +662,6 @@ func UpdateEWWaybillCustodianHistoryList(stub shim.ChaincodeStubInterface, ewway
 
 //End Update Custodian
 
-//get transaction details from transaction details json
-func parseTransactionDetails(jsonTxDetails string) (TransactionDetails, error) {
-	TransactionDet := TransactionDetails{}
-	fmt.Println("compliance document unmarshal", jsonComDoc)
-	json.Unmarshal([]byte(jsonComDoc), &complianceDoc)
-	fmt.Println("Unmarshal compliance Document", complianceDoc)
-	return complianceDoc, nil
-}
-
 //save transaction details in blockchain
 func saveTransactionDetails(stub shim.ChaincodeStubInterface, txDetails TransactionDetails) error {
 	fmt.Println("Entering in Common service saveTransactionDetails method")
