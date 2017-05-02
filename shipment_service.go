@@ -6,6 +6,7 @@ ViewShipmentWayBill: Used to fetch Shipment details
 Author: Mohd Arshad
 Dated: 30/7/2017
 /*****************************************************/
+
 package main
 
 import (
@@ -14,6 +15,8 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
+
+
 
 /************** Create Shipment Starts *********************/
 func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -26,7 +29,19 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
-
+	fmt.Println("Start of Transaction Details Store Methods............")
+	transactionDet TransactionDetails
+	transactionDet.TransactionId = saveResult.TxID
+	transactionDet.status = "Submitted"
+	transactionDet.FromUserId = shipmentRequest.Consigner
+	transactionDet.ToUserId = append(transactionDet.ToUserId, shipmentRequest.Consignee)
+	transactionDet.ToUserId = append(transactionDet.ToUserId, shipmentRequest.Carrier)
+	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionId............", transactionDet.TransactionId)
+	fmt.Println("Start of Transaction Details Store Methods transactionDet.status............", transactionDet.status)
+	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
+	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
+	err := saveTransactionDetails(stub, transactionDet)
+    fmt.Println("End of Transaction Details Store Methods............")
 	shipmentwaybillidsRequest := ShipmentWayBillIndex{}
 	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
 	fmt.Println("shipment ids.....", shipmentwaybillids)
@@ -116,10 +131,11 @@ func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBill
 		fmt.Println("Could not save WayBill to ledger", err)
 		return nil, err
 	}
-
+	txId := stub.getTxID()
 	resp := BlockchainResponse{}
 	resp.Err = "000"
 	resp.Message = shipmentWayBill.ShipmentNumber
+	resp.TxID = txId
 	respString, _ := json.Marshal(resp)
 
 	fmt.Println("Successfully saved Way Bill")

@@ -27,6 +27,7 @@ type BlockchainResponse struct {
 	Err     string `json:"err"`
 	ErrMsg  string `json:"errMsg"`
 	Message string `json:"message"`
+	TxID    string `json:"txid"`
 }
 
 type AssetDetails struct {
@@ -218,6 +219,21 @@ type ComplianceDocument struct {
 	DocumentType       string `json:"documentType"`
 	CreatedBy          string `json:"createdBy"`
 	CreatedDateStr     string `json:"createdDateStr"`
+}
+
+//storing transaction details
+type TransactionDetails struct {
+	FromUserId                 string `json:"fromUserId"`
+	BlockCount                 string `json:"blockCount"`
+	CurrentBlock               string `json:"currentBlock"`
+	ToUserId                   []string `json:"toUserId"`
+	TransactionId             string `json:"transactionId"`
+	Status                     string `json:"status"`
+}
+
+//list of transaction document
+type TransactionDetailsList struct {
+	TransactionDetailsArr []TransactionDetails `json:"transactionDetailsArr"`
 }
 
 //mapping for entity and corresponding document

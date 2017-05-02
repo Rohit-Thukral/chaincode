@@ -661,3 +661,48 @@ func UpdateEWWaybillCustodianHistoryList(stub shim.ChaincodeStubInterface, ewway
 }
 
 //End Update Custodian
+
+//get transaction details from transaction details json
+func parseComplianceDocument(jsonTxDetails string) (TransactionDetails, error) {
+	TransactionDet := TransactionDetails{}
+	fmt.Println("compliance document unmarshal", jsonComDoc)
+	json.Unmarshal([]byte(jsonComDoc), &complianceDoc)
+	fmt.Println("Unmarshal compliance Document", complianceDoc)
+	return complianceDoc, nil
+}
+
+//save transaction details in blockchain
+func saveTransactionDetails(stub shim.ChaincodeStubInterface, txDetails TransactionDetails) error {
+	fmt.Println("Entering in Common service saveTransactionDetails method")
+	
+	fmt.Println("Transaction ID...............", transactionId)
+	fmt.Println("Transaction details to store...........",dataToStore)
+	transactionDetailsRequest:=TransactionDetailsList{}
+	trnxdetail,err :=getTransactionDetails(stub,"TransactionDetailsKey")
+	if err != nil {
+		transactionDetailsRequest.TransactionDetailsArr = append(transactionDetailsRequest.TransactionDetailsArr, txDetails)
+	} else {
+		transactionDetailsRequest.TransactionDetailsArr = append(trnxdetail.TransactionDetailsArr, txDetails)
+	}
+	dataToStore, _ := json.Marshal(transactionDetailsRequest)
+	err := DumpData(stub, "TransactionDetailsKey", string(dataToStore))
+	if err != nil {
+		fmt.Println("Transaction Details not uploaded to leadger", err)
+	}
+	return err
+}
+
+func getTransactionDetails(stub shim.ChaincodeStubInterface,txkey string) (TransactionDetailsList,err){
+	transactionDetailsList TransactionDetailsList;
+
+	indexByte, err := stub.GetState(txkey)
+	if err != nil {
+		fmt.Println("Could not retrive transaction detail ", err)
+		return transactionDetailsList, err
+	}
+		json.Unmarshal(indexByte, &transactionDetailsList)
+		return transactionDetailsList, nil
+	}
+}
+
+
