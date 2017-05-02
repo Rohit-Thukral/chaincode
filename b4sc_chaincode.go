@@ -474,9 +474,10 @@ func storeDumpDataKeysType(stub shim.ChaincodeStubInterface, keyString string) e
 
 func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string) error {
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
-
+	var blockChainAccessor BlockChainAccessor
+	fmt.Println("====block size are ====", blockChainAccessor.GetBlockchainSize())
 	err := stub.PutState(argsKey, []byte(argsValue))
-	rawTxIDrawTxID := stub.GetTxID()
+	rawTxID := stub.GetTxID()
 	txTime, _ := stub.GetTxTimestamp()
 	fmt.Println("Transaction id after putting data============================", rawTxID)
 	fmt.Println("Transaction time  after putting data============================", txTime)
