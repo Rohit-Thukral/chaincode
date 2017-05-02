@@ -489,7 +489,7 @@ func DumpTxData(stub shim.ChaincodeStubInterface, argsKey string, argsValue stri
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
 
 	err := stub.PutState(argsKey, []byte(argsValue))
-	txId := stub.stub.GetTxID()
+	txId := stub.GetTxID()
 	if err != nil {
 		fmt.Println("Could not save the Data", err)
 		return "", err
