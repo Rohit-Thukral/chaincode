@@ -681,7 +681,7 @@ func saveTransactionDetails(stub shim.ChaincodeStubInterface, txDetails Transact
 	return derr
 }
 
-func getTransactionDetails(stub shim.ChaincodeStubInterface, txkey string) (TransactionDetailsList, err) {
+func getTransactionDetails(stub shim.ChaincodeStubInterface, txkey string) (TransactionDetailsList, error) {
 	var transactionDetailsList TransactionDetailsList
 
 	indexByte, err := stub.GetState(txkey)
