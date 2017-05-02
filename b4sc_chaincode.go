@@ -67,8 +67,6 @@ type WayBillHistory struct {
 	Log       float64 `json:"log"`
 }
 
-
-
 type ShipmentIndex struct {
 	ShipmentNumber string
 	Status         string
@@ -429,8 +427,6 @@ func fetchShipmentIndex(stub shim.ChaincodeStubInterface, callingEntityName stri
 
 //START COMMNENTED BY ARSHAD AS THESE ARE NO MORE USED - KARTHIK PLEASE REVIEW AND PERMANNETLY DELETE IT IF NOT USED BY ANY OF YOU MODULE
 
-
-
 /************** View Data for Key Starts ************************/
 
 func ViewDataForKey(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -445,9 +441,8 @@ func ViewDataForKey(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 /************** DumpData Start ************************/
 
 type DumpDataKeysType struct {
-	Keys 	[]string 	`json:"keys"`
+	Keys []string `json:"keys"`
 }
-
 
 func parseDumpDataKeysType(stub shim.ChaincodeStubInterface) DumpDataKeysType {
 	res := DumpDataKeysType{}
@@ -460,7 +455,7 @@ func parseDumpDataKeysType(stub shim.ChaincodeStubInterface) DumpDataKeysType {
 	return res
 }
 
-func storeDumpDataKeysType(stub shim.ChaincodeStubInterface, keyString string) (error) {
+func storeDumpDataKeysType(stub shim.ChaincodeStubInterface, keyString string) error {
 	ddData := parseDumpDataKeysType(stub)
 	var keys []string
 	keys = ddData.Keys
@@ -469,7 +464,7 @@ func storeDumpDataKeysType(stub shim.ChaincodeStubInterface, keyString string) (
 	fmt.Println(ddData)
 	dataToStore, _ := json.Marshal(ddData)
 	fmt.Println(string(dataToStore))
-	err :=  stub.PutState("DumpDataKeysType", dataToStore)
+	err := stub.PutState("DumpDataKeysType", dataToStore)
 	if err != nil {
 		fmt.Println("Could not save the DumpDataKeysType", err)
 		return err
@@ -477,11 +472,14 @@ func storeDumpDataKeysType(stub shim.ChaincodeStubInterface, keyString string) (
 	return nil
 }
 
-func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string) (error) {
+func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string) error {
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
-	
 
 	err := stub.PutState(argsKey, []byte(argsValue))
+	txId := stub.GetTxID()
+	txTime := stub.GetTxTimestamp()
+	fmt.Println("Transaction id after putting data============================", txId)
+	fmt.Println("Transaction time  after putting data============================", txTime)
 	if err != nil {
 		fmt.Println("Could not save the Data", err)
 		return err
