@@ -1,5 +1,5 @@
 /*****Main Chaicode to start the execution*****
-V0.6
+V0.6 1
 /*****************************************************/
 package main
 

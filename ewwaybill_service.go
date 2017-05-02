@@ -36,9 +36,12 @@ func CreateEWWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 		dcShipmentData.CustodianHistory = UpdateShipmentCustodianHistoryListForeWWaybill(stub, ewWayBillRequest.Custodian, ewWayBillRequest.Comments, ewWayBillRequest.EwWayBillCreationDate, dcShipmentNumber)
 		dcShipmentData.EWWayBillNumber = ewWayBillRequest.EwWayBillNumber
 
+		bArr, cartonsSerialNumber, assetsSerialNumber, pcErr := UpdatePalletCartonAssetByWayBill(stub, dcShipmentData, EWWAYBILL, ewWayBillRequest.EwWayBillNumber)
+		dcShipmentData.CartonsSerialNumber = cartonsSerialNumber
+		dcShipmentData.AssetsSerialNumber = assetsSerialNumber
+
 		saveShipmentWayBill(stub, dcShipmentData)
 
-		UpdatePalletCartonAssetByWayBill(stub, dcShipmentData, EWWAYBILL, ewWayBillRequest.EwWayBillNumber)
 		ewWayBillRequest.ShipmentsNumber = append(ewWayBillRequest.ShipmentsNumber, dcShipmentNumber)
 		lenOfArray = len(dcShipmentData.PalletsSerialNumber)
 		for j := 0; j < lenOfArray; j++ {

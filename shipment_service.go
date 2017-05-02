@@ -19,9 +19,12 @@ import (
 func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
-	UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
+	bArr,cartonsSerialNumber, assetsSerialNumber,pcErr := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
+	shipmentRequest.CartonsSerialNumber = cartonsSerialNumber
+	shipmentRequest.AssetsSerialNumber = assetsSerialNumber
 	fmt.Println("after updatepalletcartonasset............")
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
+	
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 
 	shipmentwaybillidsRequest := ShipmentWayBillIndex{}

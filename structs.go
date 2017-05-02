@@ -30,71 +30,72 @@ type BlockchainResponse struct {
 }
 
 type AssetDetails struct {
-	AssetSerialNumber  string
-	AssetModel         string
-	AssetType          string
-	AssetMake          string
-	AssetCOO           string
-	AssetMaufacture    string
-	AssetStatus        string
-	CreatedBy          string
-	CreatedDate        string
-	ModifiedBy         string
-	ModifiedDate       string
-	PalletSerialNumber string
-	CartonSerialNumber string
-	MshipmentNumber    string
-	DcShipmentNumber   string
-	MwayBillNumber     string
-	DcWayBillNumber    string
-	EwWayBillNumber    string
-	MShipmentDate      string
-	DcShipmentDate     string
-	MWayBillDate       string
-	DcWayBillDate      string
-	EwWayBillDate      string
+	AssetSerialNumber  string `json:"assetsSerialNumber"`
+	AssetModel         string `json:"assetModel"`
+	AssetType          string `json:"assetType"`
+	AssetMake          string `json:"assetMake"`
+	AssetCOO           string `json:"assetCOO"`
+	AssetMaufacture    string `json:"assetMaufacture"`
+	AssetStatus        string `json:"assetStatus"`
+	CreatedBy          string `json:"createdBy"`
+	CreatedDate        string `json:"createdDate"`
+	ModifiedBy         string `json:"modifiedBy"`
+	ModifiedDate       string `json:"modifiedDate"`
+	PalletSerialNumber string `json:"palletSerialNumber"`
+	CartonSerialNumber string `json:"cartonSerialNumber"`
+	MshipmentNumber    string `json:"mshipmentNumber"`
+	DcShipmentNumber   string `json:"dcShipmentNumber"`
+	MwayBillNumber     string `json:"mwayBillNumber"`
+	DcWayBillNumber    string `json:"dcWayBillNumber"`
+	EwWayBillNumber    string `json:"ewWayBillNumber"`
+	MShipmentDate      string `json:"mShipmentDate"`
+	DcShipmentDate     string `json:"dcShipmentDate"`
+	MWayBillDate       string `json:"mWayBillDate"`
+	DcWayBillDate      string `json:"dcWayBillDate"`
+	EwWayBillDate      string `json:"ewWayBillDate"`
 }
 
 type CartonDetails struct {
-	CartonSerialNumber string
-	CartonModel        string
-	CartonStatus       string
-	CartonCreationDate string
-	PalletSerialNumber string
-	AssetSerialNumber  []string
-	MshipmentNumber    string
-	DcShipmentNumber   string
-	MwayBillNumber     string
-	DcWayBillNumber    string
-	EwWayBillNumber    string
-	Dimensions         string
-	Weight             string
-	MShipmentDate      string
-	DcShipmentDate     string
-	MWayBillDate       string
-	DcWayBillDate      string
-	EwWayBillDate      string
+	CartonSerialNumber string `json:"cartonSerialNumber"`
+	CartonModel        string `json:"cartonModel"`
+	CartonStatus       string `json:"cartonStatus"`
+	CartonCreatedBy    string `json:"cartonCreatedBy"`
+	CartonCreationDate string `json:"cartonCreationDate"`
+	PalletSerialNumber string `json:"palletSerialNumber"`
+	AssetSerialNumber  []string `json:"assetsSerialNumber"`
+	MshipmentNumber    string `json:"mshipmentNumber"`
+	DcShipmentNumber   string `json:"dcShipmentNumber"`
+	MwayBillNumber     string `json:"mwayBillNumber"`
+	DcWayBillNumber    string `json:"dcWayBillNumber"`
+	EwWayBillNumber    string `json:"ewWayBillNumber"`
+	Dimensions         string `json:"dimensions"`
+	Weight             string `json:"weight"`
+	MShipmentDate      string `json:"mShipmentDate"`
+	DcShipmentDate     string `json:"dcShipmentDate"`
+	MWayBillDate       string `json:"mWayBillDate"`
+	DcWayBillDate      string `json:"dcWayBillDate"`
+	EwWayBillDate      string `json:"ewWayBillDate"`
 }
 
 type PalletDetails struct {
-	PalletSerialNumber string
-	PalletModel        string
-	PalletStatus       string
-	CartonSerialNumber []string
-	PalletCreationDate string
-	AssetSerialNumber  []string
-	MshipmentNumber    string
-	DcShipmentNumber   string
-	MwayBillNumber     string
-	DcWayBillNumber    string
-	EwWayBillNumber    string
-	Dimensions         string
-	Weight             string
-	MShipmentDate      string
-	DcShipmentDate     string
-	MWayBillDate       string
-	DcWayBillDate      string
-	EwWayBillDate      string
+	PalletSerialNumber string `json:"palletSerialNumber"`
+	PalletModel        string `json:"palletModel"`
+	PalletStatus       string `json:"palletStatus"`
+	CartonSerialNumber []string `json:"cartonSerialNumber"`
+	PalletCreationDate string `json:"palletCreationDate"`
+	AssetSerialNumber  []string `json:"assetsSerialNumber"`
+	MshipmentNumber    string `json:"mshipmentNumber"`
+	DcShipmentNumber   string `json:"dcShipmentNumber"`
+	MwayBillNumber     string `json:"mwayBillNumber"`
+	DcWayBillNumber    string `json:"dcWayBillNumber"`
+	EwWayBillNumber    string `json:"ewWayBillNumber"`
+	Dimensions         string `json:"dimensions"`
+	Weight             string `json:"weight"`
+	MShipmentDate      string `json:"mShipmentDate"`
+	DcShipmentDate     string `json:"dcShipmentDate"`
+	MWayBillDate       string `json:"mWayBillDate"`
+	DcWayBillDate      string `json:"dcWayBillDate"`
+	EwWayBillDate      string `json:"ewWayBillDate"`
 }
 
 type AllShipmentWayBills struct {
@@ -119,6 +120,8 @@ type ShipmentWayBill struct {
 	VehicleType           string                    `json:"vehicleType"`
 	PickupDate            string                    `json:"pickupDate"`
 	PalletsSerialNumber   []string                  `json:"palletsSerialNumber"`
+	CartonsSerialNumber   []string                  `json:"cartonsSerialNumber"`
+	AssetsSerialNumber    []string                  `json:"assetsSerialNumber"`
 	AddressOfConsigner    string                    `json:"addressOfConsigner"`
 	AddressOfConsignee    string                    `json:"addressOfConsignee"`
 	ConsignerRegNumber    string                    `json:"consignerRegNumber"`
@@ -143,6 +146,10 @@ type ShipmentWayBill struct {
 	WayBillCreatedBy      string                    `json:"waybillCreatedBy"`
 	WayBillModifiedDate   string                    `json:"waybillModifiedDate"`
 	WayBillModifiedBy     string                    `json:"waybillModifiedBy"`
+	ShipmentImage         []byte                    `json:"shipmentImage"`
+	WaybillImage          []byte                    `json:"waybillImage"`
+	DCShipmentImage       []byte                    `json:"dcshipmentImage"`
+	DCWaybillImage        []byte                    `json:"dcwaybillImage"`
 }
 type SupportiveDocumentsList struct {
 	DocumentType  string `json:"documentType"`
@@ -178,8 +185,9 @@ type EWWayBill struct {
 	SupportiveDocuments   []SupportiveDocumentsList `json:"supportiveDocumentsList"`
 	EwWayBillCreationDate string                    `json:"ewWaybillCreationDate"`
 	EwWayBillCreatedBy    string                    `json:"ewWaybillCreatedBy"`
-	EwWayBillModifiedDate string                    `json:"ewWaybillModifiedBy"`
+	EwWayBillModifiedDate string                    `json:"ewWaybillModifiedDate"`
 	EwWayBillModifiedBy   string                    `json:"ewWaybillModifiedBy"`
+	EWWayBillImage        []byte                    `json:"ewWaybillImage"`
 }
 
 type EntityWayBillMapping struct {
