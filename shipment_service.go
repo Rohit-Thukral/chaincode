@@ -31,8 +31,7 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	saveResultRes := BlockchainResponse{}
 	json.Unmarshal([]byte(saveResult), &saveResultRes)
 
-	respString, _ := json.Unmarshal(resp)
-	var transactionDet TransactionDetails
+	transactionDet := TransactionDetails{}
 	transactionDet.TransactionId = saveResultRes.TxID
 	transactionDet.status = "Submitted"
 	transactionDet.FromUserId = shipmentRequest.Consigner
