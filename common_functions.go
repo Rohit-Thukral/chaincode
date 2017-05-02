@@ -666,9 +666,7 @@ func UpdateEWWaybillCustodianHistoryList(stub shim.ChaincodeStubInterface, ewway
 func saveTransactionDetails(stub shim.ChaincodeStubInterface, txDetails TransactionDetails) error {
 	fmt.Println("Entering in Common service saveTransactionDetails method")
 
-	fmt.Println("Transaction ID...............", transactionId)
-	fmt.Println("Transaction details to store...........", dataToStore)
-	transactionDetailsRequest := TransactionDetailsList{}
+	var transactionDetailsRequest TransactionDetailsList
 	trnxdetail, err := getTransactionDetails(stub, "TransactionDetailsKey")
 	if err != nil {
 		transactionDetailsRequest.TransactionDetailsArr = append(transactionDetailsRequest.TransactionDetailsArr, txDetails)
