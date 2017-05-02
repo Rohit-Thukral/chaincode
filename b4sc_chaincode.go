@@ -11,11 +11,10 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/peer"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric/core/peer"
+	"github.com/hyperledger/fabric/protos/utils"
 )
 
 const NODATA_ERROR_CODE string = "400"
@@ -477,7 +476,7 @@ func storeDumpDataKeysType(stub shim.ChaincodeStubInterface, keyString string) e
 
 func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string) error {
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
-	var blockChainAccessor BlockChainAccessor
+	var blockChainAccessor peer.BlockChainAccessor
 	fmt.Println("====block size are ====", blockChainAccessor.GetBlockchainSize())
 	err := stub.PutState(argsKey, []byte(argsValue))
 	rawTxID := stub.GetTxID()
@@ -487,18 +486,19 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 
 	txID := string(rawTxID)
 	fmt.Println("string Transaction id after putting data============================", txID)
+	vledger := peer.GetLedger("04303ed5d8290176a258bb6de582177e11ae4742030a8f604043be2c56c0d011499cf485ae0a7006ddf37fc90018e4e8ad5986fd381f6b3960955440b7cf5b5f")
 	block, berr := vledger.GetBlockByTxID(txID)
 
 	fmt.Println("Transaction id blockafter putting data============================", block)
 	if berr != nil {
-		return shim.Error(fmt.Sprintf("Failed to get block for txID %s, error %s", txID, berr))
+		return berr
 	}
 
 	bytes, merr := utils.Marshal(block)
 
 	fmt.Println("Transaction id block marshalblockafter putting data============================", bytes)
 	if merr != nil {
-		return shim.Error(merr.Error())
+		return merr
 	}
 	if err != nil {
 		fmt.Println("Could not save the Data", err)
