@@ -11,6 +11,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	
+	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/hyperledger/fabric/core/peer"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
