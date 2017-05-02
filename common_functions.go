@@ -674,35 +674,33 @@ func parseComplianceDocument(jsonTxDetails string) (TransactionDetails, error) {
 //save transaction details in blockchain
 func saveTransactionDetails(stub shim.ChaincodeStubInterface, txDetails TransactionDetails) error {
 	fmt.Println("Entering in Common service saveTransactionDetails method")
-	
+
 	fmt.Println("Transaction ID...............", transactionId)
-	fmt.Println("Transaction details to store...........",dataToStore)
-	transactionDetailsRequest:=TransactionDetailsList{}
-	trnxdetail,err :=getTransactionDetails(stub,"TransactionDetailsKey")
+	fmt.Println("Transaction details to store...........", dataToStore)
+	transactionDetailsRequest := TransactionDetailsList{}
+	trnxdetail, err := getTransactionDetails(stub, "TransactionDetailsKey")
 	if err != nil {
 		transactionDetailsRequest.TransactionDetailsArr = append(transactionDetailsRequest.TransactionDetailsArr, txDetails)
 	} else {
 		transactionDetailsRequest.TransactionDetailsArr = append(trnxdetail.TransactionDetailsArr, txDetails)
 	}
 	dataToStore, _ := json.Marshal(transactionDetailsRequest)
-	err := DumpData(stub, "TransactionDetailsKey", string(dataToStore))
-	if err != nil {
-		fmt.Println("Transaction Details not uploaded to leadger", err)
+	derr := DumpData(stub, "TransactionDetailsKey", string(dataToStore))
+	if derr != nil {
+		fmt.Println("Transaction Details not uploaded to leadger", derr)
 	}
-	return err
+	return derr
 }
 
-func getTransactionDetails(stub shim.ChaincodeStubInterface,txkey string) (TransactionDetailsList,err){
-	transactionDetailsList TransactionDetailsList;
+func getTransactionDetails(stub shim.ChaincodeStubInterface, txkey string) (TransactionDetailsList, err) {
+	var transactionDetailsList TransactionDetailsList
 
 	indexByte, err := stub.GetState(txkey)
 	if err != nil {
 		fmt.Println("Could not retrive transaction detail ", err)
 		return transactionDetailsList, err
 	}
-		json.Unmarshal(indexByte, &transactionDetailsList)
-		return transactionDetailsList, nil
-	}
+	json.Unmarshal(indexByte, &transactionDetailsList)
+	return transactionDetailsList, nil
+
 }
-
-
