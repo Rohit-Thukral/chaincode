@@ -476,10 +476,26 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
 
 	err := stub.PutState(argsKey, []byte(argsValue))
-	txId := stub.GetTxID()
+	rawTxIDrawTxID := stub.GetTxID()
 	txTime, _ := stub.GetTxTimestamp()
-	fmt.Println("Transaction id after putting data============================", txId)
+	fmt.Println("Transaction id after putting data============================", rawTxID)
 	fmt.Println("Transaction time  after putting data============================", txTime)
+
+	txID := string(rawTxID)
+	fmt.Println("string Transaction id after putting data============================", txID)
+	block, berr := vledger.GetBlockByTxID(txID)
+
+	fmt.Println("Transaction id blockafter putting data============================", block)
+	if berr != nil {
+		return shim.Error(fmt.Sprintf("Failed to get block for txID %s, error %s", txID, berr))
+	}
+
+	bytes, merr := utils.Marshal(block)
+
+	fmt.Println("Transaction id block marshalblockafter putting data============================", bytes)
+	if merr != nil {
+		return shim.Error(merr.Error())
+	}
 	if err != nil {
 		fmt.Println("Could not save the Data", err)
 		return err
