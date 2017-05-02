@@ -663,7 +663,7 @@ func UpdateEWWaybillCustodianHistoryList(stub shim.ChaincodeStubInterface, ewway
 //End Update Custodian
 
 //get transaction details from transaction details json
-func parseComplianceDocument(jsonTxDetails string) (TransactionDetails, error) {
+func parseTransactionDetails(jsonTxDetails string) (TransactionDetails, error) {
 	TransactionDet := TransactionDetails{}
 	fmt.Println("compliance document unmarshal", jsonComDoc)
 	json.Unmarshal([]byte(jsonComDoc), &complianceDoc)

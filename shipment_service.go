@@ -16,21 +16,19 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-
-
 /************** Create Shipment Starts *********************/
 func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
-	_,cartonsSerialNumber, assetsSerialNumber,_ := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
+	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, SHIPMENT, "")
 	shipmentRequest.CartonsSerialNumber = cartonsSerialNumber
 	shipmentRequest.AssetsSerialNumber = assetsSerialNumber
 	fmt.Println("after updatepalletcartonasset............")
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
-	
+
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 	fmt.Println("Start of Transaction Details Store Methods............")
-	transactionDet TransactionDetails
+	var transactionDet TransactionDetails
 	transactionDet.TransactionId = saveResult.TxID
 	transactionDet.status = "Submitted"
 	transactionDet.FromUserId = shipmentRequest.Consigner
@@ -41,7 +39,7 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	err := saveTransactionDetails(stub, transactionDet)
-    fmt.Println("End of Transaction Details Store Methods............")
+	fmt.Println("End of Transaction Details Store Methods............")
 	shipmentwaybillidsRequest := ShipmentWayBillIndex{}
 	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
 	fmt.Println("shipment ids.....", shipmentwaybillids)
