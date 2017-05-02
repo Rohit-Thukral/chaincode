@@ -13,7 +13,7 @@ import (
 	"os"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	//"github.com/hyperledger/fabric/core/peer"
+	"github.com/hyperledger/fabric/core/peer"
 )
 
 const NODATA_ERROR_CODE string = "400"
