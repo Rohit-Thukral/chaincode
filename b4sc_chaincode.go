@@ -477,7 +477,7 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 
 	err := stub.PutState(argsKey, []byte(argsValue))
 	txId := stub.GetTxID()
-	txTime := stub.GetTxTimestamp()
+	txTime, _ := stub.GetTxTimestamp()
 	fmt.Println("Transaction id after putting data============================", txId)
 	fmt.Println("Transaction time  after putting data============================", txTime)
 	if err != nil {
