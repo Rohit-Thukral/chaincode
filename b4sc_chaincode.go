@@ -14,7 +14,6 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/core/peer"
-	"github.com/hyperledger/fabric/protos/utils"
 )
 
 const NODATA_ERROR_CODE string = "400"
@@ -494,7 +493,7 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 		return berr
 	}
 
-	bytes, merr := utils.Marshal(block)
+	bytes, merr := json.Marshal(block)
 
 	fmt.Println("Transaction id block marshalblockafter putting data============================", bytes)
 	if merr != nil {
