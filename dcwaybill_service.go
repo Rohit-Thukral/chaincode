@@ -46,7 +46,7 @@ func CreateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	dcshipmentDetails.Status = dcwayBillRequest.Status
 	dcshipmentDetails.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, dcshipmentDetails)
 
-	bArr, cartonsSerialNumber, assetsSerialNumber, pcErr := UpdatePalletCartonAssetByWayBill(stub, dcwayBillRequest, DCWAYBILL, "")
+	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, dcwayBillRequest, DCWAYBILL, "")
 	dcshipmentDetails.CartonsSerialNumber = cartonsSerialNumber
 	dcshipmentDetails.AssetsSerialNumber = assetsSerialNumber
 

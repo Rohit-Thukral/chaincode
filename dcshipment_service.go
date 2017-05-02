@@ -25,7 +25,7 @@ Dated: 30/7/2017
 func CreateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering DC Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
-	bArr, cartonsSerialNumber, assetsSerialNumber, pcErr := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, DCSHIPMENT, "")
+	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, DCSHIPMENT, "")
 	shipmentRequest.CartonsSerialNumber = cartonsSerialNumber
 	shipmentRequest.AssetsSerialNumber = assetsSerialNumber
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
