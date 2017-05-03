@@ -62,7 +62,7 @@ func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey str
 func checkTransactionCondition(entityId string, txArr []TransactionDetails) []TransactionDetails {
 
 	fmt.Println("In Check transaction condition method entityID-->", entityId, "TxArr", txArr)
-	var txDetailsArr []TransactionDetails
+	txDetailsArr := []TransactionDetails{}
 	var toUsers []string
 	lenOfArray := len(txArr)
 	fmt.Println("===lenOfArray all Transaction details===", lenOfArray)
