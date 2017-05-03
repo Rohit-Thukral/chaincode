@@ -18,7 +18,7 @@ type TransactionResponse struct {
 	TransactionDetailsArr []TransactionDetails `json:"transactionDetailsArr"`
 }
 
-func GetTransactionRecords(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *TransactionService) GetTransactionRecords(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Transaction Details " + args[0])
 	var resp TransactionResponse
 
@@ -34,7 +34,7 @@ func GetTransactionRecords(stub shim.ChaincodeStubInterface, args []string) ([]b
 	return []byte(datatoreturn), nil
 }
 
-func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey string) (TransactionDetailsList, error) {
+func (t *TransactionService) fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey string) (TransactionDetailsList, error) {
 	fmt.Println("Entering fetchTransactionEntity" + transactionKey)
 	var transactionDetailsData TransactionDetailsList
 
@@ -59,7 +59,7 @@ func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey str
 
 }
 
-func checkTransactionCondition(entityId string, txArr []TransactionDetails) []TransactionDetails {
+func (t *TransactionService) checkTransactionCondition(entityId string, txArr []TransactionDetails) []TransactionDetails {
 
 	fmt.Println("In Check transaction condition method entityID-->", entityId, "TxArr", txArr)
 	var txDetailsArr []TransactionDetails
@@ -85,7 +85,7 @@ func checkTransactionCondition(entityId string, txArr []TransactionDetails) []Tr
 	return txDetailsArr
 }
 
-func parseTransactionRequest(jsondata string) TransactionRequest {
+func (t *TransactionService) parseTransactionRequest(jsondata string) TransactionRequest {
 	fmt.Println("Entering parseTransactionRequest ", jsondata)
 	res := TransactionRequest{}
 	json.Unmarshal([]byte(jsondata), &res)
