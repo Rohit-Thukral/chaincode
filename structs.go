@@ -57,46 +57,46 @@ type AssetDetails struct {
 }
 
 type CartonDetails struct {
-	CartonSerialNumber string `json:"cartonSerialNumber"`
-	CartonModel        string `json:"cartonModel"`
-	CartonStatus       string `json:"cartonStatus"`
-	CartonCreatedBy    string `json:"cartonCreatedBy"`
-	CartonCreationDate string `json:"cartonCreationDate"`
-	PalletSerialNumber string `json:"palletSerialNumber"`
+	CartonSerialNumber string   `json:"cartonSerialNumber"`
+	CartonModel        string   `json:"cartonModel"`
+	CartonStatus       string   `json:"cartonStatus"`
+	CartonCreatedBy    string   `json:"cartonCreatedBy"`
+	CartonCreationDate string   `json:"cartonCreationDate"`
+	PalletSerialNumber string   `json:"palletSerialNumber"`
 	AssetSerialNumber  []string `json:"assetsSerialNumber"`
-	MshipmentNumber    string `json:"mshipmentNumber"`
-	DcShipmentNumber   string `json:"dcShipmentNumber"`
-	MwayBillNumber     string `json:"mwayBillNumber"`
-	DcWayBillNumber    string `json:"dcWayBillNumber"`
-	EwWayBillNumber    string `json:"ewWayBillNumber"`
-	Dimensions         string `json:"dimensions"`
-	Weight             string `json:"weight"`
-	MShipmentDate      string `json:"mShipmentDate"`
-	DcShipmentDate     string `json:"dcShipmentDate"`
-	MWayBillDate       string `json:"mWayBillDate"`
-	DcWayBillDate      string `json:"dcWayBillDate"`
-	EwWayBillDate      string `json:"ewWayBillDate"`
+	MshipmentNumber    string   `json:"mshipmentNumber"`
+	DcShipmentNumber   string   `json:"dcShipmentNumber"`
+	MwayBillNumber     string   `json:"mwayBillNumber"`
+	DcWayBillNumber    string   `json:"dcWayBillNumber"`
+	EwWayBillNumber    string   `json:"ewWayBillNumber"`
+	Dimensions         string   `json:"dimensions"`
+	Weight             string   `json:"weight"`
+	MShipmentDate      string   `json:"mShipmentDate"`
+	DcShipmentDate     string   `json:"dcShipmentDate"`
+	MWayBillDate       string   `json:"mWayBillDate"`
+	DcWayBillDate      string   `json:"dcWayBillDate"`
+	EwWayBillDate      string   `json:"ewWayBillDate"`
 }
 
 type PalletDetails struct {
-	PalletSerialNumber string `json:"palletSerialNumber"`
-	PalletModel        string `json:"palletModel"`
-	PalletStatus       string `json:"palletStatus"`
+	PalletSerialNumber string   `json:"palletSerialNumber"`
+	PalletModel        string   `json:"palletModel"`
+	PalletStatus       string   `json:"palletStatus"`
 	CartonSerialNumber []string `json:"cartonSerialNumber"`
-	PalletCreationDate string `json:"palletCreationDate"`
+	PalletCreationDate string   `json:"palletCreationDate"`
 	AssetSerialNumber  []string `json:"assetsSerialNumber"`
-	MshipmentNumber    string `json:"mshipmentNumber"`
-	DcShipmentNumber   string `json:"dcShipmentNumber"`
-	MwayBillNumber     string `json:"mwayBillNumber"`
-	DcWayBillNumber    string `json:"dcWayBillNumber"`
-	EwWayBillNumber    string `json:"ewWayBillNumber"`
-	Dimensions         string `json:"dimensions"`
-	Weight             string `json:"weight"`
-	MShipmentDate      string `json:"mShipmentDate"`
-	DcShipmentDate     string `json:"dcShipmentDate"`
-	MWayBillDate       string `json:"mWayBillDate"`
-	DcWayBillDate      string `json:"dcWayBillDate"`
-	EwWayBillDate      string `json:"ewWayBillDate"`
+	MshipmentNumber    string   `json:"mshipmentNumber"`
+	DcShipmentNumber   string   `json:"dcShipmentNumber"`
+	MwayBillNumber     string   `json:"mwayBillNumber"`
+	DcWayBillNumber    string   `json:"dcWayBillNumber"`
+	EwWayBillNumber    string   `json:"ewWayBillNumber"`
+	Dimensions         string   `json:"dimensions"`
+	Weight             string   `json:"weight"`
+	MShipmentDate      string   `json:"mShipmentDate"`
+	DcShipmentDate     string   `json:"dcShipmentDate"`
+	MWayBillDate       string   `json:"mWayBillDate"`
+	DcWayBillDate      string   `json:"dcWayBillDate"`
+	EwWayBillDate      string   `json:"ewWayBillDate"`
 }
 
 type AllShipmentWayBills struct {
@@ -223,12 +223,12 @@ type ComplianceDocument struct {
 
 //storing transaction details
 type TransactionDetails struct {
-	FromUserId                 string `json:"fromUserId"`
-	BlockCount                 string `json:"blockCount"`
-	CurrentBlock               string `json:"currentBlock"`
-	ToUserId                   []string `json:"toUserId"`
-	TransactionId             string `json:"transactionId"`
-	Status                     string `json:"status"`
+	FromUserId    string   `json:"fromUserId"`
+	BlockCount    string   `json:"blockCount"`
+	CurrentBlock  string   `json:"currentBlock"`
+	ToUserId      []string `json:"toUserId"`
+	TransactionId string   `json:"transactionId"`
+	Status        string   `json:"status"`
 }
 
 //list of transaction document
@@ -257,4 +257,20 @@ type CustodianHistoryDetail struct {
 }
 type CustodianHistory struct {
 	CustodianHistoryList []CustodianHistoryDetail `json:"custodianHistory"`
+}
+
+//storing transaction details
+type TransactionDetails struct {
+	FromUserId      string   `json:"fromUserId"`
+	BlockCount      string   `json:"blockCount"`
+	CurrentBlock    string   `json:"currentBlock"`
+	ToUserId        []string `json:"toUserId"`
+	TransactionId   string   `json:"transactionId"`
+	Status          string   `json:"status"`
+	TransactionTime string   `json:"transactionTime"`
+}
+
+//list of transaction document
+type TransactionDetailsList struct {
+	TransactionDetailsArr []TransactionDetails `json:"transactionDetailsArr"`
 }

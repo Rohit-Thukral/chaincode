@@ -477,9 +477,9 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
 
 	err := stub.PutState(argsKey, []byte(argsValue))
-	//led, _ := ledger.GetLedger()
+	led, _ := ledger.GetLedger()
 
-	//fmt.Println("ledger =================================", led)
+	fmt.Println("ledger =================================", led)
 	if err != nil {
 		fmt.Println("Could not save the Data", err)
 		return err
@@ -569,10 +569,16 @@ func (t *B4SCChaincode) Invoke(stub shim.ChaincodeStubInterface, function string
 		return UpdateShipment(stub, args)
 	} else if function == "CreateWayBill" {
 		return CreateWayBill(stub, args)
+	} else if function == "UpdateWayBill" {
+		return UpdateWayBill(stub, args)
 	} else if function == "CreateDCShipment" {
 		return CreateDCShipment(stub, args)
+	} else if function == "UpdateDCShipment" {
+		return UpdateDCShipment(stub, args)
 	} else if function == "CreateDCWayBill" {
 		return CreateDCWayBill(stub, args)
+	} else if function == "UpdateDCWayBill" {
+		return UpdateDCWayBill(stub, args)
 	} else if function == "CreateEWWayBill" {
 		return CreateEWWayBill(stub, args)
 	} else if function == "UpdateEWWayBill" {
@@ -624,8 +630,14 @@ func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string,
 		return GetPallet(stub, args)
 	} else if function == "GetCarton" {
 		return GetCarton(stub, args)
-	} else if function == "ViewShipmentWayBill" {
-		return ViewShipmentWayBill(stub, args)
+	} else if function == "ViewShipment" {
+		return ViewShipment(stub, args)
+	} else if function == "ViewWayBill" {
+		return ViewWayBill(stub, args)
+	} else if function == "ViewDCShipment" {
+		return ViewDCShipment(stub, args)
+	} else if function == "ViewDCWayBill" {
+		return ViewDCWayBill(stub, args)
 	} else if function == "getAllComplianceDocument" {
 		return getAllComplianceDocument(stub, args)
 	} else if function == "SearchDateRange" {
@@ -639,6 +651,8 @@ func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string,
 	} else if function == "GetCountryWarehouse" {
 		var pageLoadService ShipmentPageLoadService
 		return pageLoadService.GetCountryWarehouse(stub, args)
+	} else if function == "GetTransactionRecords" {
+		return GetTransactionRecords(stub, args)
 	}
 	return nil, errors.New("Invalid function name " + function)
 
