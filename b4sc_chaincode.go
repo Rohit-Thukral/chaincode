@@ -478,7 +478,7 @@ func DumpData(stub shim.ChaincodeStubInterface, argsKey string, argsValue string
 	fmt.Println("Entering DumpData " + argsKey + "  " + argsValue)
 
 	err := stub.PutState(argsKey, []byte(argsValue))
-	led, _ = ledger.GetLedger()
+	led, _ := ledger.GetLedger()
 
 	fmt.Println("ledger =================================", led)
 	if err != nil {
