@@ -116,7 +116,6 @@ func ViewDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Entering ViewDCShipment " + args[0])
 
 	dcshipmentNo := args[0]
-	dcshipmentNo := wayBillShipmentMapping.DCShipmentNumber
 	wayBilldata, dataerr := fetchShipmentWayBillData(stub, dcshipmentNo)
 	if dataerr == nil {
 

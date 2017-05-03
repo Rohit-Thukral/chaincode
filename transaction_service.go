@@ -34,7 +34,7 @@ func GetTransactionRecords(stub shim.ChaincodeStubInterface, args []string) ([]b
 	return []byte(datatoreturn)
 }
 
-func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey string) (Entity, error) {
+func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey string) (TransactionDetailsList, error) {
 	fmt.Println("Entering fetchTransactionEntity" + transactionKey)
 	var transactionDetailsData TransactionDetailsList
 

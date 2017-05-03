@@ -221,21 +221,6 @@ type ComplianceDocument struct {
 	CreatedDateStr     string `json:"createdDateStr"`
 }
 
-//storing transaction details
-type TransactionDetails struct {
-	FromUserId    string   `json:"fromUserId"`
-	BlockCount    string   `json:"blockCount"`
-	CurrentBlock  string   `json:"currentBlock"`
-	ToUserId      []string `json:"toUserId"`
-	TransactionId string   `json:"transactionId"`
-	Status        string   `json:"status"`
-}
-
-//list of transaction document
-type TransactionDetailsList struct {
-	TransactionDetailsArr []TransactionDetails `json:"transactionDetailsArr"`
-}
-
 //mapping for entity and corresponding document
 type EntityComplianceDocMapping struct {
 	ComplianceIds []string `json:"complianceIds"`
