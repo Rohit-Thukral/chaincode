@@ -41,11 +41,11 @@ func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey str
 	indexByte, err := stub.GetState(transactionKey)
 	if err != nil {
 		fmt.Println("Could not retrive Transaction Details", err)
-		return entities, err
+		return transactionDetailsData, err
 	}
 	fmt.Println("entities Bytes :  " + string(indexByte))
 
-	marshErr := json.Unmarshal(indexByte, &transactionDetailsData); 
+	marshErr := json.Unmarshal(indexByte, &transactionDetailsData)
 	if marshErr != nil {
 		fmt.Println("Could not retrieve transaction details", marshErr)
 		return transactionDetailsData, marshErr
@@ -86,8 +86,8 @@ func checkTransactionCondition(entityId string, txArr []TransactionDetails) []Tr
 	return txDetailsArr
 }
 
-func parseTransactionRequest(jsondata string) InboxRequest {
-	fmt.Println("Entering parseTransactionRequest " + jsondata)
+func parseTransactionRequest(jsondata string) TransactionRequest {
+	fmt.Println("Entering parseTransactionRequest ", jsondata)
 	res := TransactionRequest{}
 	json.Unmarshal([]byte(jsondata), &res)
 

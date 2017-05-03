@@ -75,7 +75,7 @@ func UpdateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
 
-	saveResult, errMsg = saveShipmentWayBill(stub, shipmentRequest)
+	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}
 	json.Unmarshal([]byte(saveResult), &saveResultRes)
