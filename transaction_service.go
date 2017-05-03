@@ -21,15 +21,15 @@ type TransactionResponse struct {
 func (t *TransactionService) GetTransactionRecords(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Transaction Details " + args[0])
 	var resp TransactionResponse
+	var thisClass TransactionService
+	request := thisClass.parseTransactionRequest(args[0])
 
-	request := parseTransactionRequest(args[0])
-
-	tmpEntity, err := fetchTransactionEntity(stub, "TransactionDetailsKey")
+	tmpEntity, err := thisClass.fetchTransactionEntity(stub, "TransactionDetailsKey")
 	if err != nil {
 		fmt.Println("Error while retrieveing the Transaction Details", err)
 		return nil, err
 	}
-	resp.TransactionDetailsArr = checkTransactionCondition(request.CallingEntityName, tmpEntity.TransactionDetailsArr)
+	resp.TransactionDetailsArr = thisClass.checkTransactionCondition(request.CallingEntityName, tmpEntity.TransactionDetailsArr)
 	datatoreturn, _ := json.Marshal(resp)
 	return []byte(datatoreturn), nil
 }
