@@ -47,7 +47,7 @@ func CreateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	err := saveTransactionDetails(stub, transactionDet)
+	_ := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	shipmentwaybillidsRequest := ShipmentWayBillIndex{}
 	shipmentwaybillids, err := FetchShipmentWayBillIndex(stub, "ShipmentWayBillIndex")
@@ -93,7 +93,7 @@ func UpdateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	err := saveTransactionDetails(stub, transactionDet)
+	_ := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	return saveResult, errMsg
 }

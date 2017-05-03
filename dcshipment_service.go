@@ -52,7 +52,7 @@ func CreateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, 
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	err := saveTransactionDetails(stub, transactionDet)
+	_ := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 
 	/*********Storing Shipment number in shipmentwaybillindex array to retrieve through inbox*************/
@@ -102,7 +102,7 @@ func UpdateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, 
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	err := saveTransactionDetails(stub, transactionDet)
+	_ := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	return saveResult, errMsg
 }

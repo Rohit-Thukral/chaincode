@@ -60,7 +60,7 @@ func CreateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	errtx := saveTransactionDetails(stub, transactionDet)
+	_ := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	return saveResult, errMsg
 }
@@ -95,7 +95,7 @@ func UpdateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	err := saveTransactionDetails(stub, transactionDet)
+	_ := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	return saveResult, errMsg
 }
