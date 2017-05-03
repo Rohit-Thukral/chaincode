@@ -79,7 +79,7 @@ func CreateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	_ := saveTransactionDetails(stub, transactionDet)
+	_ = saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 
 	var waybillShipmentMapping WayBillShipmentMapping
@@ -122,7 +122,7 @@ func UpdateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	_ := saveTransactionDetails(stub, transactionDet)
+	_ = saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	return saveResult, errMsg
 }
