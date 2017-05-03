@@ -109,7 +109,7 @@ func ViewWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error
 	fmt.Println("Entering ViewWayBill " + args[0])
 
 	waybillno := args[0]
-	wayBillShipmentMapping, err := FetchWayBillShipmentMappingData(stub, waybillno)
+	wayBillShipmentMapping, _ := FetchWayBillShipmentMappingData(stub, waybillno)
 	shipmentNo := wayBillShipmentMapping.DCShipmentNumber
 	wayBilldata, dataerr := fetchShipmentWayBillData(stub, shipmentNo)
 	if dataerr == nil {
