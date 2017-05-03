@@ -40,7 +40,7 @@ func CreateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, wayBillRequest, WAYBILL, "")
 	shipmentDetails.CartonsSerialNumber = cartonsSerialNumber
 	shipmentDetails.AssetsSerialNumber = assetsSerialNumber
-	saveResult, errMsg = saveShipmentWayBill(stub, shipmentDetails)
+	saveResult, errMsg := saveShipmentWayBill(stub, shipmentDetails)
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}
 	json.Unmarshal([]byte(saveResult), &saveResultRes)
@@ -60,7 +60,7 @@ func CreateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
-	err := saveTransactionDetails(stub, transactionDet)
+	errtx := saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
 	return saveResult, errMsg
 }

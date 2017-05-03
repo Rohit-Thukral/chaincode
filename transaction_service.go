@@ -31,7 +31,7 @@ func GetTransactionRecords(stub shim.ChaincodeStubInterface, args []string) ([]b
 	}
 	resp.TransactionDetailsArr = checkTransactionCondition(request.CallingEntityName, tmpEntity.TransactionDetailsArr)
 	datatoreturn, _ := json.Marshal(resp)
-	return []byte(datatoreturn)
+	return []byte(datatoreturn), nil
 }
 
 func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey string) (TransactionDetailsList, error) {
@@ -45,7 +45,8 @@ func fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey str
 	}
 	fmt.Println("entities Bytes :  " + string(indexByte))
 
-	if marshErr := json.Unmarshal(indexByte, &transactionDetailsData); marshErr != nil {
+	marshErr := json.Unmarshal(indexByte, &transactionDetailsData); 
+	if marshErr != nil {
 		fmt.Println("Could not retrieve transaction details", marshErr)
 		return transactionDetailsData, marshErr
 	}
@@ -68,7 +69,7 @@ func checkTransactionCondition(entityId string, txArr []TransactionDetails) []Tr
 
 	for i := 0; i < lenOfArray; i++ {
 		txDetails := txArr[i]
-		toUserArr = txArr[i].ToUserId
+		toUserArr := txArr[i].ToUserId
 		if txDetails.FromUserId == entityId {
 			txDetailsArr = append(txDetailsArr, txDetalis)
 		} else {
