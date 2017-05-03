@@ -459,7 +459,7 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 		//Start Loop for Asset Nos
 		lenOfassetArray := len(palletData.AssetSerialNumber)
 
-		for jas := 0; jas < lenOfcartonArray; jas++ {
+		for jas := 0; jas < lenOfassetArray; jas++ {
 			assetSerialNumbers = append(assetSerialNumbers, palletData.AssetSerialNumber[jas])
 		}
 		fmt.Println("assets lenOfArray===", lenOfassetArray)
