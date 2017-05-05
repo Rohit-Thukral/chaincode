@@ -176,6 +176,8 @@ type EWWayBill struct {
 	PersonConsigningGoods string                    `json:"personConsigningGoods"`
 	Comments              string                    `json:"comments"`
 	PalletsSerialNumber   []string                  `json:"palletsSerialNumber"`
+	CartonsSerialNumber   []string                  `json:"cartonsSerialNumber"`
+	AssetsSerialNumber    []string                  `json:"assetsSerialNumber"`
 	AddressOfConsigner    string                    `json:"addressOfConsigner"`
 	AddressOfConsignee    string                    `json:"addressOfConsignee"`
 	ConsignerRegNumber    string                    `json:"consignerRegNumber"`

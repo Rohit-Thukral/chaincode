@@ -190,7 +190,9 @@ func saveEWWayBill(stub shim.ChaincodeStubInterface, createEWWayBillRequest EWWa
 	ewWayBill.EwWayBillModifiedDate = createEWWayBillRequest.EwWayBillModifiedDate
 	ewWayBill.EwWayBillModifiedBy = createEWWayBillRequest.EwWayBillModifiedBy
 	ewWayBill.Status = createEWWayBillRequest.Status
-
+	ewWayBill.CartonsSerialNumber = createEWWayBillRequest.CartonsSerialNumber
+	ewWayBill.AssetsSerialNumber = createEWWayBillRequest.AssetsSerialNumber
+	ewWayBill.EWWayBillImage = createEWWayBillRequest.EWWayBillImage
 	dataToStore, _ := json.Marshal(ewWayBill)
 	txId, err := DumpTxData(stub, ewWayBill.EwWayBillNumber, string(dataToStore))
 	if err != nil {

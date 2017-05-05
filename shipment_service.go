@@ -152,6 +152,12 @@ func saveShipmentWayBill(stub shim.ChaincodeStubInterface, createShipmentWayBill
 	shipmentWayBill.WayBillModifiedDate = createShipmentWayBillRequest.WayBillModifiedDate
 	shipmentWayBill.WayBillModifiedBy = createShipmentWayBillRequest.WayBillModifiedBy
 	shipmentWayBill.Status = createShipmentWayBillRequest.Status
+	shipmentWayBill.CartonsSerialNumber = createShipmentWayBillRequest.CartonsSerialNumber
+	shipmentWayBill.AssetsSerialNumber = createShipmentWayBillRequest.AssetsSerialNumber
+	shipmentWayBill.ShipmentImage = createShipmentWayBillRequest.ShipmentImage
+	shipmentWayBill.WaybillImage = createShipmentWayBillRequest.WaybillImage
+	shipmentWayBill.DCShipmentImage = createShipmentWayBillRequest.DCShipmentImage
+	shipmentWayBill.DCWaybillImage = createShipmentWayBillRequest.DCWaybillImage
 	dataToStore, _ := json.Marshal(shipmentWayBill)
 	fmt.Println("shipmentWayBill============ ", shipmentWayBill)
 	fmt.Println("dataToStore============ ", dataToStore)
