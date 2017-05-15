@@ -65,6 +65,8 @@ func saveAssetDetails(stub shim.ChaincodeStubInterface, createAssetDetailsReques
 	assetDetails.MWayBillDate = createAssetDetailsRequest.MWayBillDate
 	assetDetails.DcWayBillDate = createAssetDetailsRequest.DcWayBillDate
 	assetDetails.EwWayBillDate = createAssetDetailsRequest.EwWayBillDate
+	assetDetails.RetailerShipmentNumber = createAssetDetailsRequest.RetailerShipmentNumber
+	assetDetails.RetailerWaybillNumber = createAssetDetailsRequest.RetailerWaybillNumber
 	fmt.Println("assetDetails data to update-->", assetDetails)
 
 	dataToStore, _ := json.Marshal(assetDetails)
@@ -123,6 +125,8 @@ func saveCartonDetails(stub shim.ChaincodeStubInterface, createCartonDetailsRequ
 	cartonDetails.MWayBillDate = createCartonDetailsRequest.MWayBillDate
 	cartonDetails.DcWayBillDate = createCartonDetailsRequest.DcWayBillDate
 	cartonDetails.EwWayBillDate = createCartonDetailsRequest.EwWayBillDate
+	cartonDetails.RetailerShipmentNumber = createCartonDetailsRequest.RetailerShipmentNumber
+	cartonDetails.RetailerWaybillNumber = createCartonDetailsRequest.RetailerWaybillNumber
 	fmt.Println("cartondetails data update---->", cartonDetails)
 	dataToStore, _ := json.Marshal(cartonDetails)
 
@@ -179,6 +183,8 @@ func savePalletDetails(stub shim.ChaincodeStubInterface, createPalletDetailsRequ
 	palletDetails.MWayBillDate = createPalletDetailsRequest.MWayBillDate
 	palletDetails.DcWayBillDate = createPalletDetailsRequest.DcWayBillDate
 	palletDetails.EwWayBillDate = createPalletDetailsRequest.EwWayBillDate
+	palletDetails.RetailerShipmentNumber = createPalletDetailsRequest.RetailerShipmentNumber
+	palletDetails.RetailerWaybillNumber = createPalletDetailsRequest.RetailerWaybillNumber
 	fmt.Println("pallet data to update-->", palletDetails)
 	dataToStore, _ := json.Marshal(palletDetails)
 
@@ -253,6 +259,27 @@ func GetCarton(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) 
 
 	return nil, dataerr
 
+}
+func stringExistInArray(arrayData []string, data string) bool {
+	arraylen := len(arrayData)
+	result := false
+	for i := 0; i < arraylen; i++ {
+		if arrayData[i] == data {
+			return true
+		}
+	}
+	return result
+}
+
+func stringNotExistInArray(arrayData []string, data string) bool {
+	arraylen := len(arrayData)
+	result := true
+	for i := 0; i < arraylen; i++ {
+		if arrayData[i] == data {
+			return false
+		}
+	}
+	return result
 }
 func fetchCartonDetails(stub shim.ChaincodeStubInterface, cartonSerialNo string) (CartonDetails, error) {
 	var cartonDetails CartonDetails
@@ -421,6 +448,10 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 			palletData.DcShipmentNumber = wayBillRequest.ShipmentNumber
 		} else if source == DCWAYBILL {
 			palletData.DcWayBillNumber = wayBillRequest.WayBillNumber
+		} else if source == RETAILERWAYBILL {
+			palletData.RetailerWaybillNumber = wayBillRequest.WayBillNumber
+		} else if source == RETAILERSHIPMENT {
+			palletData.RetailerShipmentNumber = wayBillRequest.ShipmentNumber
 		}
 		savePalletDetails(stub, palletData)
 		fmt.Println("After savepalletDetails==")
@@ -449,6 +480,10 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 				cartonData.DcShipmentNumber = wayBillRequest.ShipmentNumber
 			} else if source == DCWAYBILL {
 				cartonData.DcWayBillNumber = wayBillRequest.WayBillNumber
+			} else if source == RETAILERWAYBILL {
+				cartonData.RetailerWaybillNumber = wayBillRequest.WayBillNumber
+			} else if source == RETAILERSHIPMENT {
+				cartonData.RetailerShipmentNumber = wayBillRequest.ShipmentNumber
 			}
 			saveCartonDetails(stub, cartonData)
 			fmt.Println("after save carton===")
@@ -481,6 +516,10 @@ func UpdatePalletCartonAssetByWayBill(stub shim.ChaincodeStubInterface, wayBillR
 				assetData.DcShipmentNumber = wayBillRequest.ShipmentNumber
 			} else if source == DCWAYBILL {
 				assetData.DcWayBillNumber = wayBillRequest.WayBillNumber
+			} else if source == RETAILERWAYBILL {
+				assetData.RetailerWaybillNumber = wayBillRequest.WayBillNumber
+			} else if source == RETAILERSHIPMENT {
+				assetData.RetailerShipmentNumber = wayBillRequest.ShipmentNumber
 			}
 			saveAssetDetails(stub, assetData)
 			fmt.Println("after save assets===")

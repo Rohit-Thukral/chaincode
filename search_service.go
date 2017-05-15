@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
+	
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -728,6 +728,7 @@ func fetchAllAssetData(stub shim.ChaincodeStubInterface) ([]string, error) {
 	json.Unmarshal(indexByte, &allAssetData)
 
 	fmt.Println("======================allAssetData data-->")
+	fmt.Println(string(indexByte))
 	fmt.Println(allAssetData)
 	fmt.Println("======================")
 
@@ -735,7 +736,7 @@ func fetchAllAssetData(stub shim.ChaincodeStubInterface) ([]string, error) {
 
 }
 
-func PrepareSearchDateRangeResponse(stub shim.ChaincodeStubInterface, assetIds []string) ([]byte, error) {
+func PrepareSearchDateRangeResponse(stub shim.ChaincodeStubInterface, assetIds []string, request SearchDateRequest) ([]byte, error) {
 	var resp SearchDateResponse
 	var err error
 	var respDataArr []SearchDateResponseData
@@ -786,7 +787,13 @@ func PrepareSearchDateRangeResponse(stub shim.ChaincodeStubInterface, assetIds [
 
 
 				respData.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
-				respDataArr = append(respDataArr, respData)
+				if(compareDates(request.StartDate, request.EndDate, tmpShipment.ShipmentCreationDate)) {
+					respDataArr = append(respDataArr, respData)
+				}else {
+					fmt.Println("tmpShipment.ShipmentCreationDate is not in range", tmpShipment.ShipmentCreationDate)
+				}
+
+				
 			}
 		}
 
@@ -823,7 +830,12 @@ func PrepareSearchDateRangeResponse(stub shim.ChaincodeStubInterface, assetIds [
 
 
 				respData3.History = prepareHistroyTrail(stub, tmpShipment.CustodianHistory)
-				respDataArr = append(respDataArr, respData3)
+				if(compareDates(request.StartDate, request.EndDate, tmpShipment.ShipmentCreationDate)) {
+					respDataArr = append(respDataArr, respData3)
+				}else {
+					fmt.Println("tmpShipment.ShipmentCreationDate is not in range", tmpShipment.ShipmentCreationDate)
+				}
+				
 			}
 		}
 	}
@@ -832,13 +844,26 @@ func PrepareSearchDateRangeResponse(stub shim.ChaincodeStubInterface, assetIds [
 
 }
 
+func parseSearchDateRequest(requestParam string) (SearchDateRequest) {
+	var request SearchDateRequest
+
+	if marshErr := json.Unmarshal([]byte(requestParam), &request); marshErr != nil {
+		fmt.Println("Could not Unmarshal Asset", marshErr)
+	}
+	return request
+
+}
+
+
 func SearchDateRange(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	//var shipmentDump AllShipmentDump
 	var err error
 	var resp SearchDateResponse
 	var assetIDArr []string
-	
+	var request SearchDateRequest
+
+	request = parseSearchDateRequest(args[0])
 	
 	assetIDArr,err =fetchAllAssetData(stub)
 	fmt.Println("======================allAssetData data-->")
@@ -847,7 +872,7 @@ func SearchDateRange(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	fmt.Println("======================")
 	if(err == nil) {
 		
-		return PrepareSearchDateRangeResponse(stub, assetIDArr )
+		return PrepareSearchDateRangeResponse(stub, assetIDArr,request )
 
 	}
 

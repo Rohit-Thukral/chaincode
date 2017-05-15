@@ -1,9 +1,9 @@
-/*****Chaincode to perform Delivery Centre Shipment*****
+/*****Chaincode to perform retailer Shipment*****
 Methods Involved
-CreateDCShipment : Create Delivery Centre Shipment
+CreateRetailerShipment : Create retailer Shipment
 
-Author: Mohd Arshad
-Dated: 30/7/2017
+Author: santosh
+Dated: 09/05/2017
 /*****************************************************/
 package main
 
@@ -16,17 +16,18 @@ import (
 
 /*****Chaincode to perfor shipment realeted task*****
 Methods Involved
-CreateShipment : Used for Creating Shipment
+CreateShipment : Used for Creating retailer Shipment
 
-Author: Mohd Arshad
-Dated: 30/7/2017
+Author: santosh
+Dated: 09/05/2017
 /*****************************************************/
 
 /************** Create DC Shipment Starts ***********************/
-func CreateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Println("Entering DC Create Shipment", args[0])
+func CreateRetailerShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering Retailer Create Shipment", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
-	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, DCSHIPMENT, "")
+	shipmentRequest.PalletsSerialNumber, _ = getPalletSerialNoByCartonNo(stub, shipmentRequest.CartonsSerialNumber)
+	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, shipmentRequest, RETAILERSHIPMENT, "")
 	shipmentRequest.CartonsSerialNumber = cartonsSerialNumber
 	shipmentRequest.AssetsSerialNumber = assetsSerialNumber
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
@@ -75,14 +76,14 @@ func CreateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, 
 /************** Create DC Shipment Ends ************************/
 
 /************** Update Waybill Starts *********************/
-func UpdateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func UpdateRetailerShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Update Waybill", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 	wayBilldata, _ := fetchShipmentWayBillData(stub, shipmentRequest.ShipmentNumber)
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
-	shipmentRequest.DCShipmentImage = wayBilldata.DCShipmentImage
-	shipmentRequest.DCWaybillImage = wayBilldata.DCWaybillImage
+	shipmentRequest.ShipmentImage = wayBilldata.ShipmentImage
+	shipmentRequest.WaybillImage = wayBilldata.WaybillImage
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}
@@ -114,11 +115,11 @@ func UpdateDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, 
 /************** Get waybill WayBill Starts ******************/
 /*This is common code for Get Shipment,WayBill,DCShipment,DCWayBill*/
 
-func ViewDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Println("Entering ViewDCShipment " + args[0])
+func ViewRetailerShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering ViewRetailerShipment " + args[0])
 
-	dcshipmentNo := args[0]
-	wayBilldata, dataerr := fetchShipmentWayBillData(stub, dcshipmentNo)
+	shipmentNo := args[0]
+	wayBilldata, dataerr := fetchShipmentWayBillData(stub, shipmentNo)
 	if dataerr == nil {
 
 		dataToStore, _ := json.Marshal(wayBilldata)
@@ -131,3 +132,21 @@ func ViewDCShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 }
 
 /************** Get  WayBill Ends ********************/
+
+//*************get pallet array by carton array****************//
+func getPalletSerialNoByCartonNo(stub shim.ChaincodeStubInterface, cartonNo []string) ([]string, error) {
+	fmt.Println("Entering getPalletSerialNoByCartonNo ", cartonNo)
+	lenOfcartonArray := len(cartonNo)
+	fmt.Println("length of carton array...", lenOfcartonArray)
+	var palletNo []string
+	for ca := 0; ca < lenOfcartonArray; ca++ {
+		cartonData, _ := fetchCartonDetails(stub, cartonNo[ca])
+		if stringNotExistInArray(palletNo, cartonData.PalletSerialNumber) {
+			palletNo = append(palletNo, cartonData.PalletSerialNumber)
+		}
+	}
+
+	return palletNo, nil
+
+}
+

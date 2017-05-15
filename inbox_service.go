@@ -109,13 +109,13 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 	}
 
 	if entityType == "ThirdPartyLogistic" {
-		if inboxName == "Scheduled" && (status == "ShipmentCreated" || status == "DCShipmentCreated") && carrier == entityId {
+		if inboxName == "Scheduled" && (status == "ShipmentCreated" || status == "DCShipmentCreated" || status == "RetailerShipmentCreated") && carrier == entityId {
 			return "true"
 		}
-		if inboxName == "InTransit" && (status == "WaybillCreated" || status == "DCWaybillCreated") && carrier == entityId {
+		if inboxName == "InTransit" && (status == "WaybillCreated" || status == "DCWaybillCreated" || status == "RetailerWaybillCreated") && carrier == entityId {
 			return "true"
 		}
-		if inboxName == "Delivered" && (status == "WaybillDelivered" || status == "DCWaybillDelivered") && carrier == entityId {
+		if inboxName == "Delivered" && (status == "WaybillDelivered" || status == "DCWaybillDelivered" || status == "RetailerWaybillDelivered") && carrier == entityId {
 			return "true"
 		}
 	}
@@ -124,16 +124,16 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 		if inboxName == "Scheduled" && (status == "WaybillCreated" || status == "DCWaybillCreated") && consigneeName == entityId {
 			return "true"
 		}
-		if inboxName == "Created" && status == "DCShipmentCreated" && consignerName == entityId {
+		if inboxName == "Created" && (status == "DCShipmentCreated" || status == "RetailerShipmentCreated") && consignerName == entityId {
 			return "true"
 		}
-		if inboxName == "InTransit" && status == "DCWaybillCreated" && (consignerName == entityId || consigneeName == entityId) {
+		if inboxName == "InTransit" && (status == "DCWaybillCreated" || status == "RetailerWaybillCreated") && (consignerName == entityId || consigneeName == entityId) {
 			return "true"
 		}
-		if inboxName == "Delivered" && ((status == "DCWaybillDelivered" && (consignerName == entityId || consigneeName == entityId)) || (status == "WaybillDelivered" && consigneeName == entityId)) {
+		if inboxName == "Delivered" && (((status == "DCWaybillDelivered" || status == "RetailerWaybillDelivered") && (consignerName == entityId || consigneeName == entityId)) || (status == "WaybillDelivered" && consigneeName == entityId)) {
 			return "true"
 		}
-		if inboxName == "Cancelled" && status == "DCShipmentCancelled" && consignerName == entityId {
+		if inboxName == "Cancelled" && (status == "DCShipmentCancelled" || status == "RetailerShipmentCancelled") && consignerName == entityId {
 			return "true"
 		}
 	}
@@ -176,7 +176,15 @@ func (t *InboxService) checkInboxCondition(entityId string, entityType string, i
 			return "true"
 		}
 	}
+	if entityType == "Retailer" {
 
+		if inboxName == "Scheduled" && status == "RetailerWaybillCreated" && consigneeName == entityId {
+			return "true"
+		}
+		if inboxName == "Delivered" && status == "RetailerWaybillDelivered" && consigneeName == entityId {
+			return "true"
+		}
+	}
 	return "false"
 }
 

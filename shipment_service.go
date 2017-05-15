@@ -72,6 +72,8 @@ func UpdateShipment(stub shim.ChaincodeStubInterface, args []string) ([]byte, er
 	wayBilldata, _ := fetchShipmentWayBillData(stub, shipmentRequest.ShipmentNumber)
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
+	shipmentRequest.ShipmentImage = wayBilldata.ShipmentImage
+	shipmentRequest.WaybillImage = wayBilldata.WaybillImage
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}

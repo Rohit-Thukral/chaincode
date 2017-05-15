@@ -599,6 +599,14 @@ func (t *B4SCChaincode) Invoke(stub shim.ChaincodeStubInterface, function string
 		return UpdatePalletDetails(stub, args)
 	} else if function == "uploadComplianceDocument" {
 		return uploadComplianceDocument(stub, args)
+	} else if function == "CreateRetailerShipment" {
+		return CreateRetailerShipment(stub, args)
+	} else if function == "UpdateRetailerShipment" {
+		return UpdateRetailerShipment(stub, args)
+	} else if function == "CreateRetailerWayBill" {
+		return CreateRetailerWayBill(stub, args)
+	} else if function == "UpdateRetailerWayBill" {
+		return UpdateRetailerWayBill(stub, args)
 	} else {
 		return nil, errors.New("Invalid function name " + function)
 	}
@@ -648,6 +656,8 @@ func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string,
 		return SearchCarton(stub, args)
 	} else if function == "SearchAsset" {
 		return SearchAsset(stub, args)
+	} else if function == "ViewRetailerShipment" {
+		return ViewRetailerShipment(stub, args)
 	} else if function == "GetCountryWarehouse" {
 		var pageLoadService ShipmentPageLoadService
 		return pageLoadService.GetCountryWarehouse(stub, args)

@@ -30,6 +30,13 @@ type ConsigneeShipmentPageLoadResponse struct {
 	ConsigneeCountry   string `json:"consigneeCountry"`
 	ConsigneeRegNumber string `json:"consigneeRegNumber"`
 }
+type RetailerShipmentPageLoadResponse struct {
+	RetailerId        string `json:"RetailerId"`
+	RetailerName      string `json:"RetailerName"`
+	RetailerAddress   string `json:"RetailerAddress"`
+	RetailerCountry   string `json:"RetailerCountry"`
+	RetailerRegNumber string `json:"RetailerRegNumber"`
+}
 
 type CarrierResponse struct {
 	CarrierID string `json:"CarrierID"`
@@ -48,6 +55,7 @@ type ShipmentPageLoadResponse struct {
 	Carrier            []CarrierResponse                   `json:"carrier"`
 	ModelNames         []string                            `json:"modelNames"`
 	WaybillIds         []EntityWayBillMappingDetail        `json:"waybillIds"`
+	Retailer           []RetailerShipmentPageLoadResponse  `json:"retailer"`
 }
 
 type CountryEntityMappingRequest struct {
@@ -147,6 +155,7 @@ func (t *ShipmentPageLoadService) ShipmentPageLoad(stub shim.ChaincodeStubInterf
 			}
 			entityWayBillMappingDetail = waybillIds.WayBillsNumber
 		}
+		response.Retailer, _ = thisClass.fetchCorrespondingRetailer(stub, consignerDetails)
 		response.CallingEntityName = request.CallingEntityName
 
 		response.ConsignerId = consignerDetails.ConsignerId
@@ -204,7 +213,7 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 			fmt.Println("===tmpEntity.EntityId ===", tmpEntity.EntityId)
 
 			if err == nil {
-				if tmpEntity.EntityId != consignerDetails.ConsignerId && ((consignerDetails.ConsignerType == "Manufacturer" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "Warehouse" && tmpEntity.EntityType == "Warehouse" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry)) {
+				if tmpEntity.EntityId != consignerDetails.ConsignerId && ((consignerDetails.ConsignerType == "Manufacturer" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "DC" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "Warehouse" && tmpEntity.EntityType == "Warehouse" && consignerDetails.ConsignerCountry != tmpEntity.EntityCountry) || (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "Retailer" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry)) {
 					tmpConsigneeResponse.ConsigneeId = tmpEntity.EntityId
 					tmpConsigneeResponse.ConsigneeName = tmpEntity.EntityName
 					tmpConsigneeResponse.ConsigneeAddress = tmpEntity.EntityAddress
@@ -237,6 +246,48 @@ func (t *ShipmentPageLoadService) fetchCorrespondingConsignees(stub shim.Chainco
 	fmt.Println("Exiting fetchCorrespondingConsignees ")
 
 	return consigneeArr, carrier, nil
+
+}
+func (t *ShipmentPageLoadService) fetchCorrespondingRetailer(stub shim.ChaincodeStubInterface, consignerDetails ConsignerShipmentPageLoadResponse) ([]RetailerShipmentPageLoadResponse, error) {
+	fmt.Println("Entering fetchCorrespondingRetailer consignerDetails : ")
+	fmt.Println("===consignerDetails===", consignerDetails)
+
+	var err error
+	var thisClass ShipmentPageLoadService
+
+	var retailerArr []RetailerShipmentPageLoadResponse
+	var allEntities AllEntities
+
+	allEntities, err = thisClass.fetchAllEntities(stub)
+	if err == nil {
+		lenOfArray := len(allEntities.EntityArr)
+		fmt.Println("===lenOfArray all entities===", lenOfArray)
+
+		for i := 0; i < lenOfArray; i++ {
+			var tmpRetailerResponse RetailerShipmentPageLoadResponse
+			var tmpEntity Entity
+
+			tmpEntity, err = thisClass.fetchEntities(stub, allEntities.EntityArr[i])
+
+			if err == nil {
+				if tmpEntity.EntityId != consignerDetails.ConsignerId && (consignerDetails.ConsignerType == "DC" && tmpEntity.EntityType == "Retailer" && consignerDetails.ConsignerCountry == tmpEntity.EntityCountry) {
+					tmpRetailerResponse.RetailerId = tmpEntity.EntityId
+					tmpRetailerResponse.RetailerName = tmpEntity.EntityName
+					tmpRetailerResponse.RetailerAddress = tmpEntity.EntityAddress
+					tmpRetailerResponse.RetailerCountry = tmpEntity.EntityCountry
+					tmpRetailerResponse.RetailerRegNumber = tmpEntity.EntityRegNumber
+					retailerArr = append(retailerArr, tmpRetailerResponse)
+
+				}
+			}
+
+		}
+	} else {
+		fmt.Println("Error while fetching workflow data", err)
+		return retailerArr, err
+	}
+
+	return retailerArr, nil
 
 }
 

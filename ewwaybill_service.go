@@ -126,6 +126,7 @@ func UpdateEWWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 	ewWayBillRequest.CustodianHistory = UpdateEWWaybillCustodianHistoryList(stub, ewWayBillRequest)
 	emWayBilldata, _ := fetchEWWayBillData(stub, ewWayBillRequest.EwWayBillNumber)
 	ewWayBillRequest.SupportiveDocuments = emWayBilldata.SupportiveDocuments
+	ewWayBillRequest.EWWayBillImage = emWayBilldata.EWWayBillImage
 	saveResult, errMsg := saveEWWayBill(stub, ewWayBillRequest)
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}

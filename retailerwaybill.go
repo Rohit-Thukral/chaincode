@@ -23,42 +23,42 @@ Dated: 30/7/2017
 /*****************************************************/
 
 /************** Create DC Way Bill Starts ***********************/
-func CreateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Println("Entering Create WayBill", args[0])
+func CreateRetailerWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering Create Retailer WayBill", args[0])
 
-	dcwayBillRequest := parseShipmentWayBillRequest(args[0])
+	retailerwayBillRequest := parseShipmentWayBillRequest(args[0])
 
-	dcshipmentDetails, err := fetchShipmentWayBillData(stub, dcwayBillRequest.ShipmentNumber)
+	retailershipmentDetails, err := fetchShipmentWayBillData(stub, retailerwayBillRequest.ShipmentNumber)
 
 	if err != nil {
-		fmt.Println("Error while retrieveing the Shipment Details", err)
+		fmt.Println("Error while retrieveing the retailer Shipment Details", err)
 		return nil, err
 	}
-	dcshipmentDetails.WayBillNumber = dcwayBillRequest.WayBillNumber
-	dcshipmentDetails.VehicleNumber = dcwayBillRequest.VehicleNumber
-	dcshipmentDetails.VehicleType = dcwayBillRequest.VehicleType
-	dcshipmentDetails.PickupDate = dcwayBillRequest.PickupDate
-	dcshipmentDetails.Custodian = dcwayBillRequest.Custodian
-	dcshipmentDetails.TpComments = dcwayBillRequest.TpComments
-	dcshipmentDetails.WayBillCreationDate = dcwayBillRequest.WayBillCreationDate
-	dcshipmentDetails.WayBillCreatedBy = dcwayBillRequest.WayBillCreatedBy
-	dcshipmentDetails.VehicleType = dcwayBillRequest.VehicleType
-	dcshipmentDetails.EntityName = dcwayBillRequest.EntityName
-	dcshipmentDetails.Status = dcwayBillRequest.Status
-	dcshipmentDetails.DCWaybillImage = dcwayBillRequest.DCWaybillImage
-	dcshipmentDetails.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, dcshipmentDetails)
+	retailershipmentDetails.WayBillNumber = retailerwayBillRequest.WayBillNumber
+	retailershipmentDetails.VehicleNumber = retailerwayBillRequest.VehicleNumber
+	retailershipmentDetails.VehicleType = retailerwayBillRequest.VehicleType
+	retailershipmentDetails.PickupDate = retailerwayBillRequest.PickupDate
+	retailershipmentDetails.Custodian = retailerwayBillRequest.Custodian
+	retailershipmentDetails.TpComments = retailerwayBillRequest.TpComments
+	retailershipmentDetails.WayBillCreationDate = retailerwayBillRequest.WayBillCreationDate
+	retailershipmentDetails.WayBillCreatedBy = retailerwayBillRequest.WayBillCreatedBy
+	retailershipmentDetails.VehicleType = retailerwayBillRequest.VehicleType
+	retailershipmentDetails.EntityName = retailerwayBillRequest.EntityName
+	retailershipmentDetails.Status = retailerwayBillRequest.Status
+	retailershipmentDetails.WaybillImage = retailerwayBillRequest.WaybillImage
+	retailershipmentDetails.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, retailershipmentDetails)
+	retailershipmentDetails.PalletsSerialNumber, _ = getPalletSerialNoByCartonNo(stub, retailerwayBillRequest.CartonsSerialNumber)
+	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, retailerwayBillRequest, RETAILERWAYBILL, "")
+	retailershipmentDetails.CartonsSerialNumber = cartonsSerialNumber
+	retailershipmentDetails.AssetsSerialNumber = assetsSerialNumber
 
-	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, dcwayBillRequest, DCWAYBILL, "")
-	dcshipmentDetails.CartonsSerialNumber = cartonsSerialNumber
-	dcshipmentDetails.AssetsSerialNumber = assetsSerialNumber
-
-	UpdateEntityWayBillMapping(stub, dcshipmentDetails.EntityName, dcshipmentDetails.WayBillNumber, dcshipmentDetails.CountryFrom)
-	err = DumpData(stub, dcshipmentDetails.WayBillNumber, dcwayBillRequest.ShipmentNumber)
+	UpdateEntityWayBillMapping(stub, retailershipmentDetails.EntityName, retailershipmentDetails.WayBillNumber, retailershipmentDetails.CountryFrom)
+	err = DumpData(stub, retailershipmentDetails.WayBillNumber, retailerwayBillRequest.ShipmentNumber)
 	if err != nil {
 		fmt.Println("Could not save WayBill to ledger", err)
 		return nil, err
 	}
-	saveResult, errMsg := saveShipmentWayBill(stub, dcshipmentDetails)
+	saveResult, errMsg := saveShipmentWayBill(stub, retailershipmentDetails)
 
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}
@@ -66,28 +66,22 @@ func CreateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 
 	transactionDet := TransactionDetails{}
 	transactionDet.TransactionId = saveResultRes.TxID
-	transactionDet.TransactionTime = dcshipmentDetails.WayBillCreationDate
+	transactionDet.TransactionTime = retailershipmentDetails.WayBillCreationDate
 	if errMsg != nil {
 		transactionDet.Status = "Failure"
 	} else {
 		transactionDet.Status = "Success"
 	}
-	transactionDet.FromUserId = dcshipmentDetails.Custodian
-	transactionDet.ToUserId = append(transactionDet.ToUserId, dcshipmentDetails.Consignee)
-	transactionDet.ToUserId = append(transactionDet.ToUserId, dcshipmentDetails.EntityName)
+	transactionDet.FromUserId = retailershipmentDetails.Custodian
+	transactionDet.ToUserId = append(transactionDet.ToUserId, retailershipmentDetails.Consignee)
+	transactionDet.ToUserId = append(transactionDet.ToUserId, retailershipmentDetails.EntityName)
 	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionId............", transactionDet.TransactionId)
-	fmt.Println("Start of Transaction Details Store Methods transactionDet.status............", transactionDet.Status)
-	fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
-	fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
-	fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
+	//fmt.Println("Start of Transaction Details Store Methods transactionDet.status............", transactionDet.Status)
+	//fmt.Println("Start of Transaction Details Store Methods transactionDet.FromUserId............", transactionDet.FromUserId)
+	//fmt.Println("Start of Transaction Details Store Methods transactionDet.ToUserId............", transactionDet.ToUserId)
+	//fmt.Println("Start of Transaction Details Store Methods transactionDet.TransactionTime............", transactionDet.TransactionTime)
 	_ = saveTransactionDetails(stub, transactionDet)
 	fmt.Println("End of Transaction Details Store Methods............")
-
-	var waybillShipmentMapping WayBillShipmentMapping
-	waybillShipmentMapping.DCShipmentNumber = dcshipmentDetails.ShipmentNumber
-	waybillShipmentMapping.DCWayBillsNumber = dcshipmentDetails.WayBillNumber
-	saveWayBillShipmentMapping(stub, waybillShipmentMapping)
-	fmt.Println("Successfully saved waybill shipment mapping details")
 	return saveResult, errMsg
 
 }
@@ -95,12 +89,14 @@ func CreateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 /************** Create DC Way Bill Ends ************************/
 
 /************** Update Waybill Starts *********************/
-func UpdateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func UpdateRetailerWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering Update DCWaybill", args[0])
 	shipmentRequest := parseShipmentWayBillRequest(args[0])
 	wayBilldata, _ := fetchShipmentWayBillData(stub, shipmentRequest.ShipmentNumber)
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
+	shipmentRequest.ShipmentImage = wayBilldata.ShipmentImage
+	shipmentRequest.WaybillImage = wayBilldata.WaybillImage
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 
 	fmt.Println("Start of Transaction Details Store Methods............")
@@ -133,7 +129,7 @@ func UpdateDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, e
 /************** Get waybill WayBill Starts ******************/
 /*This is common code for Get Shipment,WayBill,DCShipment,DCWayBill*/
 
-func ViewDCWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func ViewRetailerWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Println("Entering ViewDCWayBill " + args[0])
 
 	waybillno := args[0]

@@ -16,11 +16,13 @@ Dated: 30/7/2017
 package main
 
 const (
-	SHIPMENT   = "SHIPMENT"
-	WAYBILL    = "WAYBILL"
-	DCSHIPMENT = "DCSHIPMENT"
-	DCWAYBILL  = "DCWAYBILL"
-	EWWAYBILL  = "EWWAYBILL"
+	SHIPMENT         = "SHIPMENT"
+	WAYBILL          = "WAYBILL"
+	DCSHIPMENT       = "DCSHIPMENT"
+	DCWAYBILL        = "DCWAYBILL"
+	EWWAYBILL        = "EWWAYBILL"
+	RETAILERSHIPMENT = "RETAILERSHIPMENT"
+	RETAILERWAYBILL  = "RETAILERWAYBILL"
 )
 
 type BlockchainResponse struct {
@@ -31,72 +33,78 @@ type BlockchainResponse struct {
 }
 
 type AssetDetails struct {
-	AssetSerialNumber  string `json:"assetsSerialNumber"`
-	AssetModel         string `json:"assetModel"`
-	AssetType          string `json:"assetType"`
-	AssetMake          string `json:"assetMake"`
-	AssetCOO           string `json:"assetCOO"`
-	AssetMaufacture    string `json:"assetMaufacture"`
-	AssetStatus        string `json:"assetStatus"`
-	CreatedBy          string `json:"createdBy"`
-	CreatedDate        string `json:"createdDate"`
-	ModifiedBy         string `json:"modifiedBy"`
-	ModifiedDate       string `json:"modifiedDate"`
-	PalletSerialNumber string `json:"palletSerialNumber"`
-	CartonSerialNumber string `json:"cartonSerialNumber"`
-	MshipmentNumber    string `json:"mshipmentNumber"`
-	DcShipmentNumber   string `json:"dcShipmentNumber"`
-	MwayBillNumber     string `json:"mwayBillNumber"`
-	DcWayBillNumber    string `json:"dcWayBillNumber"`
-	EwWayBillNumber    string `json:"ewWayBillNumber"`
-	MShipmentDate      string `json:"mShipmentDate"`
-	DcShipmentDate     string `json:"dcShipmentDate"`
-	MWayBillDate       string `json:"mWayBillDate"`
-	DcWayBillDate      string `json:"dcWayBillDate"`
-	EwWayBillDate      string `json:"ewWayBillDate"`
+	AssetSerialNumber      string `json:"assetSerialNumber"`
+	AssetModel             string `json:"assetModel"`
+	AssetType              string `json:"assetType"`
+	AssetMake              string `json:"assetMake"`
+	AssetCOO               string `json:"assetCOO"`
+	AssetMaufacture        string `json:"assetMaufacture"`
+	AssetStatus            string `json:"assetStatus"`
+	CreatedBy              string `json:"createdBy"`
+	CreatedDate            string `json:"createdDate"`
+	ModifiedBy             string `json:"modifiedBy"`
+	ModifiedDate           string `json:"modifiedDate"`
+	PalletSerialNumber     string `json:"palletSerialNumber"`
+	CartonSerialNumber     string `json:"cartonSerialNumber"`
+	MshipmentNumber        string `json:"mshipmentNumber"`
+	DcShipmentNumber       string `json:"dcShipmentNumber"`
+	MwayBillNumber         string `json:"mwayBillNumber"`
+	DcWayBillNumber        string `json:"dcWayBillNumber"`
+	EwWayBillNumber        string `json:"ewWayBillNumber"`
+	MShipmentDate          string `json:"mShipmentDate"`
+	DcShipmentDate         string `json:"dcShipmentDate"`
+	MWayBillDate           string `json:"mWayBillDate"`
+	DcWayBillDate          string `json:"dcWayBillDate"`
+	EwWayBillDate          string `json:"ewWayBillDate"`
+	RetailerShipmentNumber string `json:"retailerShipmentNumber"`
+	RetailerWaybillNumber  string `json:"retailerWaybillNumber"`
 }
 
 type CartonDetails struct {
-	CartonSerialNumber string   `json:"cartonSerialNumber"`
-	CartonModel        string   `json:"cartonModel"`
-	CartonStatus       string   `json:"cartonStatus"`
-	CartonCreatedBy    string   `json:"cartonCreatedBy"`
-	CartonCreationDate string   `json:"cartonCreationDate"`
-	PalletSerialNumber string   `json:"palletSerialNumber"`
-	AssetSerialNumber  []string `json:"assetsSerialNumber"`
-	MshipmentNumber    string   `json:"mshipmentNumber"`
-	DcShipmentNumber   string   `json:"dcShipmentNumber"`
-	MwayBillNumber     string   `json:"mwayBillNumber"`
-	DcWayBillNumber    string   `json:"dcWayBillNumber"`
-	EwWayBillNumber    string   `json:"ewWayBillNumber"`
-	Dimensions         string   `json:"dimensions"`
-	Weight             string   `json:"weight"`
-	MShipmentDate      string   `json:"mShipmentDate"`
-	DcShipmentDate     string   `json:"dcShipmentDate"`
-	MWayBillDate       string   `json:"mWayBillDate"`
-	DcWayBillDate      string   `json:"dcWayBillDate"`
-	EwWayBillDate      string   `json:"ewWayBillDate"`
+	CartonSerialNumber     string   `json:"cartonSerialNumber"`
+	CartonModel            string   `json:"cartonModel"`
+	CartonStatus           string   `json:"cartonStatus"`
+	CartonCreatedBy        string   `json:"cartonCreatedBy"`
+	CartonCreationDate     string   `json:"cartonCreationDate"`
+	PalletSerialNumber     string   `json:"palletSerialNumber"`
+	AssetSerialNumber      []string `json:"assetsSerialNumber"`
+	MshipmentNumber        string   `json:"mshipmentNumber"`
+	DcShipmentNumber       string   `json:"dcShipmentNumber"`
+	MwayBillNumber         string   `json:"mwayBillNumber"`
+	DcWayBillNumber        string   `json:"dcWayBillNumber"`
+	EwWayBillNumber        string   `json:"ewWayBillNumber"`
+	Dimensions             string   `json:"dimensions"`
+	Weight                 string   `json:"weight"`
+	MShipmentDate          string   `json:"mShipmentDate"`
+	DcShipmentDate         string   `json:"dcShipmentDate"`
+	MWayBillDate           string   `json:"mWayBillDate"`
+	DcWayBillDate          string   `json:"dcWayBillDate"`
+	EwWayBillDate          string   `json:"ewWayBillDate"`
+	RetailerShipmentNumber string   `json:"retailerShipmentNumber"`
+	RetailerWaybillNumber  string   `json:"retailerWaybillNumber"`
 }
 
 type PalletDetails struct {
-	PalletSerialNumber string   `json:"palletSerialNumber"`
-	PalletModel        string   `json:"palletModel"`
-	PalletStatus       string   `json:"palletStatus"`
-	CartonSerialNumber []string `json:"cartonSerialNumber"`
-	PalletCreationDate string   `json:"palletCreationDate"`
-	AssetSerialNumber  []string `json:"assetsSerialNumber"`
-	MshipmentNumber    string   `json:"mshipmentNumber"`
-	DcShipmentNumber   string   `json:"dcShipmentNumber"`
-	MwayBillNumber     string   `json:"mwayBillNumber"`
-	DcWayBillNumber    string   `json:"dcWayBillNumber"`
-	EwWayBillNumber    string   `json:"ewWayBillNumber"`
-	Dimensions         string   `json:"dimensions"`
-	Weight             string   `json:"weight"`
-	MShipmentDate      string   `json:"mShipmentDate"`
-	DcShipmentDate     string   `json:"dcShipmentDate"`
-	MWayBillDate       string   `json:"mWayBillDate"`
-	DcWayBillDate      string   `json:"dcWayBillDate"`
-	EwWayBillDate      string   `json:"ewWayBillDate"`
+	PalletSerialNumber     string   `json:"palletSerialNumber"`
+	PalletModel            string   `json:"palletModel"`
+	PalletStatus           string   `json:"palletStatus"`
+	CartonSerialNumber     []string `json:"cartonSerialNumber"`
+	PalletCreationDate     string   `json:"palletCreationDate"`
+	AssetSerialNumber      []string `json:"assetsSerialNumber"`
+	MshipmentNumber        string   `json:"mshipmentNumber"`
+	DcShipmentNumber       string   `json:"dcShipmentNumber"`
+	MwayBillNumber         string   `json:"mwayBillNumber"`
+	DcWayBillNumber        string   `json:"dcWayBillNumber"`
+	EwWayBillNumber        string   `json:"ewWayBillNumber"`
+	Dimensions             string   `json:"dimensions"`
+	Weight                 string   `json:"weight"`
+	MShipmentDate          string   `json:"mShipmentDate"`
+	DcShipmentDate         string   `json:"dcShipmentDate"`
+	MWayBillDate           string   `json:"mWayBillDate"`
+	DcWayBillDate          string   `json:"dcWayBillDate"`
+	EwWayBillDate          string   `json:"ewWayBillDate"`
+	RetailerShipmentNumber string   `json:"retailerShipmentNumber"`
+	RetailerWaybillNumber  string   `json:"retailerWaybillNumber"`
 }
 
 type AllShipmentWayBills struct {

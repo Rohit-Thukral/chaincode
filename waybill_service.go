@@ -35,11 +35,13 @@ func CreateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	shipmentDetails.WayBillCreationDate = wayBillRequest.WayBillCreationDate
 	shipmentDetails.WayBillCreatedBy = wayBillRequest.WayBillCreatedBy
 	shipmentDetails.Status = wayBillRequest.Status
+	shipmentDetails.WaybillImage = wayBillRequest.WaybillImage
 	shipmentDetails.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentDetails)
 
 	_, cartonsSerialNumber, assetsSerialNumber, _ := UpdatePalletCartonAssetByWayBill(stub, wayBillRequest, WAYBILL, "")
 	shipmentDetails.CartonsSerialNumber = cartonsSerialNumber
 	shipmentDetails.AssetsSerialNumber = assetsSerialNumber
+	shipmentDetails.WaybillImage = wayBillRequest.WaybillImage
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentDetails)
 	fmt.Println("Start of Transaction Details Store Methods............")
 	saveResultRes := BlockchainResponse{}
@@ -74,6 +76,8 @@ func UpdateWayBill(stub shim.ChaincodeStubInterface, args []string) ([]byte, err
 	wayBilldata, _ := fetchShipmentWayBillData(stub, shipmentRequest.ShipmentNumber)
 	shipmentRequest.CustodianHistory = UpdateShipmentCustodianHistoryList(stub, shipmentRequest)
 	shipmentRequest.SupportiveDocuments = wayBilldata.SupportiveDocuments
+	shipmentRequest.ShipmentImage = wayBilldata.ShipmentImage
+	shipmentRequest.WaybillImage = wayBilldata.WaybillImage
 
 	saveResult, errMsg := saveShipmentWayBill(stub, shipmentRequest)
 	fmt.Println("Start of Transaction Details Store Methods............")

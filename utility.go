@@ -3,7 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
+	"time"
+	"strings"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -110,4 +111,26 @@ func (t *Utility) hasCustodian(custodianhistory []CustodianHistoryDetail, entity
 	}
 
 	return false
+}
+
+func compareDates(startDate string, endDate string, checkDate string) bool {
+	start, e := time.Parse(time.RFC3339,startDate)
+	if e != nil {
+		fmt.Println("Could not Parse Time", e)
+	}
+	end, e := time.Parse(time.RFC3339,endDate)
+	if e != nil {
+		fmt.Println("Could not Parse Time", e)
+	}
+	check, e := time.Parse(time.RFC3339,strings.Replace(checkDate,"0000","00:00",-1))
+	if e != nil {
+		fmt.Println("Could not Parse Time", e)
+	}
+	return inTimeSpan(start, end, check)
+
+}
+
+
+func inTimeSpan(start, end, check time.Time) bool {
+    return check.After(start) && check.Before(end)
 }
