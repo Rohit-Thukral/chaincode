@@ -662,7 +662,6 @@ func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string,
 		var pageLoadService ShipmentPageLoadService
 		return pageLoadService.GetCountryWarehouse(stub, args)
 	} else if function == "GetTransactionRecords" {
-		fmt.Println("inside else Query : function : " + function + " args : " + args[0])
 		var transactionService TransactionService
 		return transactionService.GetTransactionRecords(stub, args)
 	}
