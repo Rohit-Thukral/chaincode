@@ -35,6 +35,23 @@ func (t *TransactionService) GetTransactionRecords(stub shim.ChaincodeStubInterf
 	return []byte(datatoreturn), nil
 }
 
+func (t *TransactionService) GetTransactionCount(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Println("Entering Transaction Details " + args[0])
+	var resp TransactionResponse
+	var thisClass TransactionService
+	request := thisClass.parseTransactionRequest(args[0])
+
+	tmpEntity, err := thisClass.fetchTransactionEntity(stub, "TransactionDetailsKey")
+	if err != nil {
+		fmt.Println("Error while retrieveing the Transaction Details", err)
+		datatoreturn, _ := json.Marshal(tmpEntity)
+		return []byte(datatoreturn), nil
+	}
+	resp.TransactionDetailsArr = tmpEntity.TransactionDetailsArr
+	datatoreturn, _ := json.Marshal(resp)
+	return []byte(datatoreturn), nil
+}
+
 func (t *TransactionService) fetchTransactionEntity(stub shim.ChaincodeStubInterface, transactionKey string) (TransactionDetailsList, error) {
 	fmt.Println("Entering fetchTransactionEntity" + transactionKey)
 	var transactionDetailsData TransactionDetailsList

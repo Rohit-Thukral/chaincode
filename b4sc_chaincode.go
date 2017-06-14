@@ -664,6 +664,9 @@ func (t *B4SCChaincode) Query(stub shim.ChaincodeStubInterface, function string,
 	} else if function == "GetTransactionRecords" {
 		var transactionService TransactionService
 		return transactionService.GetTransactionRecords(stub, args)
+	} else if function == "GetTransactionCount" {
+		var transactionService TransactionService
+		return transactionService.GetTransactionCount(stub, args)
 	}
 	return nil, errors.New("Invalid function name " + function)
 
