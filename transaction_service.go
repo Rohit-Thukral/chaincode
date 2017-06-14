@@ -39,7 +39,6 @@ func (t *TransactionService) GetTransactionCount(stub shim.ChaincodeStubInterfac
 	fmt.Println("Entering Transaction Details " + args[0])
 	var resp TransactionResponse
 	var thisClass TransactionService
-	request := thisClass.parseTransactionRequest(args[0])
 
 	tmpEntity, err := thisClass.fetchTransactionEntity(stub, "TransactionDetailsKey")
 	if err != nil {
